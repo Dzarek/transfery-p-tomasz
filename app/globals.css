@@ -1,26 +1,182 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --textFont: var(--font-poppins);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  overflow-x: hidden;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+.app {
+  --appBgColor: #222;
+  --primaryColor: #fff;
+  --secondaryColor: #b6926c;
+  --secondaryColor2: #e9d7b6;
+  --secondaryColorLight: #ffefba;
+  --secondaryColorLight2: rgb(255, 250, 233);
+  --specialTransfser: rgb(59, 122, 204);
+  --customDarkRed: rgb(94, 0, 0);
+  --thirdColor: #111633;
+  --statusOk: #598c50;
+  --statusPending: #50708ccb;
+  /* --statusCancel: darkred; */
+  --statusCancel: rgb(95, 1, 1);
+  --lightred: rgb(255, 240, 240);
+  --navBgColor: #3c2d25;
+  --footerBgColor: #eee6e0;
+  width: 100vw;
+  min-height: 100vh;
+  color: var(--primaryColor);
+  font-family: var(--textFont);
+  position: relative;
+}
+
+.mainPage {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 10vh 5vw 0;
+  position: relative;
+}
+
+@media screen and (max-width: 800px) {
+  .mainPage {
+    width: 100vw;
+    padding: 10vh 0vw 0;
+  }
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title h2 {
+  font-family: var(--titleFont);
+  font-size: 2.7rem;
+  font-weight: 600;
+  color: var(--secondaryColor);
+  text-transform: uppercase;
+  letter-spacing: 5px;
+}
+
+.buttonLink {
+  background: none;
+  border: none;
+  font-size: 4rem;
+  cursor: pointer;
+  color: var(--navbarBgColor);
+  transition: 0.5s;
+}
+
+.buttonLink:hover {
+  color: var(--secondaryColor);
+}
+
+.icon {
+  color: var(--secondaryColor2);
+  margin-right: 10px;
+}
+
+.classOld li {
+  filter: saturate(0) opacity(0.9) brightness(0.6);
+}
+
+.loader {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+}
+
+.loader img {
+  width: 120px;
+  margin-bottom: 3vh;
+}
+
+.loader svg {
+  font-size: 7rem;
+  color: var(--secondaryColorLight2);
+  margin-bottom: 3vh;
+  animation: loaderRotate 1.5s linear infinite;
+}
+
+.loader .loaderTitle {
+  font-size: 1.4rem;
+  color: var(--secondaryColor);
+}
+
+@keyframes loaderRotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* SCROOL BAR */
+
+html::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+html::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+html::-webkit-scrollbar-thumb {
+  background: #b6926c;
+  border: 2px solid #f1f1f1;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+html::-webkit-scrollbar-thumb:hover {
+  background: #65481e;
+}
+
+.showInstructionBtn {
+  position: fixed;
+  top: 1vh;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #aaa;
+  color: white;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.4s;
+  z-index: 100000000000000000;
+  border: none;
+  font-family: var(--textFont);
+}
+
+.showInstructionBtn:hover {
+  background: #222;
+}
+
+@media screen and (max-width: 900px) {
+  .showInstructionBtn {
+    top: 30vh;
+    top: 30dvh;
+    left: 0%;
+    transform: translateX(0);
+    border-radius: 0 0 5px 0;
+  }
 }
