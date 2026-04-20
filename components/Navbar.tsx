@@ -5,7 +5,6 @@ import { signOut } from "next-auth/react";
 import { useGlobalContext } from "./authContext";
 import { useSession } from "next-auth/react";
 import FirstLoading from "./FirstLoading";
-import { redirect } from "next/navigation";
 
 const Navbar = () => {
   const { setIsLogin } = useGlobalContext();
@@ -13,7 +12,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await logout();
-    await signOut({ callbackUrl: "/" });
+    await signOut({ callbackUrl: "/logowanie" });
     setIsLogin(false);
     toast("Poprawnie wylogowano", {
       icon: "👋",
@@ -26,9 +25,6 @@ const Navbar = () => {
   };
   if (status === "loading") {
     return <FirstLoading />;
-  }
-  if (status === "unauthenticated") {
-    redirect("/logowanie");
   }
   return (
     <div>

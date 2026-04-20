@@ -182,6 +182,7 @@ const WrapperBG = styled.div`
   min-height: 100vh;
   min-height: 100dvh;
   animation: bgMove 15s linear infinite alternate;
+  z-index: 9999;
   @keyframes bgMove {
     0% {
       background-size: 100%;
@@ -196,7 +197,7 @@ const WrapperBG = styled.div`
 `;
 
 const Wrapper = styled.div`
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
