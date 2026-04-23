@@ -142,7 +142,7 @@ export interface AppContextType {
 
 // --- INICJALIZACJA KONTEKSTU ---
 
-const AppContext = React.createContext<AppContextType | undefined>(undefined);
+const AppContext2 = React.createContext<AppContextType | undefined>(undefined);
 
 moment.locale("pl");
 const currentMonthYear = moment().format("MMMM YYYY");
@@ -153,9 +153,10 @@ const money: MoneyData[] = [
   { minPeople: 4, maxPeople: 8, price: 160, provision: 50 },
 ];
 
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AppProvider2: React.FC<{
+  children: React.ReactNode;
+  isAdmin: boolean;
+}> = ({ children, isAdmin }) => {
   // STATE
   const [transfers, setTransfers] = useState<TransferData[]>([]);
   const [allUsersList, setAllUsersList] = useState<UserData[]>([]);
@@ -187,7 +188,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     () => transfers.filter((t) => t.status !== "cancel"),
     [transfers],
   );
-  const isAdmin = currentUser?.uid === process.env.NEXT_PUBLIC_ADMIN_ID;
+  // const isAdmin = currentUser?.uid === process.env.NEXT_PUBLIC_ADMIN_ID;
 
   // 2. Oddzielny efekt, który TYLKO reaguje na zmianę uprawnień i pobiera dane
 
@@ -747,7 +748,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AppContext.Provider
+    <AppContext2.Provider
       value={{
         isAdmin,
         allUsersList,
@@ -799,16 +800,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       }}
     >
       {children}
-    </AppContext.Provider>
+    </AppContext2.Provider>
   );
 };
 
 export const useGlobalContext = () => {
-  const context = useContext(AppContext);
+  const context = useContext(AppContext2);
   if (context === undefined) {
     throw new Error("useGlobalContext must be used within an AppProvider");
   }
   return context;
 };
 
-export { AppContext };
+export { AppContext2 };

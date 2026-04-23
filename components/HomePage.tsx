@@ -3,13 +3,12 @@
 import styled from "styled-components";
 import { useGlobalContext } from "./context";
 import Link from "next/link";
-// import TransfersList from "../components/TransfersList";
 import Loading from "./Loading";
 import { useState } from "react";
 import { FaCar, FaInfoCircle } from "react-icons/fa";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
 import TransfersList from "./TransfersList";
+import FirstLoading from "./FirstLoading";
 
 const bg3 = "/images/img2.jpg";
 
@@ -19,11 +18,24 @@ export default function HomePage() {
   const [lastAddedList, setLastAddedList] = useState(false);
   const { data: session, status } = useSession();
 
-  if (status !== "authenticated") {
-    // redirect("/logowanie");
-    return <p>aa</p>;
+  if (status === "loading") {
+    return <FirstLoading />;
   }
-  console.log(transfers);
+
+  if (status !== "authenticated") {
+    return (
+      <div className="page flex flex-col items-center justify-center">
+        <p className="text-2xl">Odmowa dostępu!</p>
+        <Link
+          href="/logowanie"
+          className="mt-5 p-2 rounded-md bg-red-900 text-white"
+        >
+          {" "}
+          zaloguj się
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <Wrapper>
@@ -54,8 +66,7 @@ export default function HomePage() {
               ) : (
                 <>
                   {lastAddedTransfers.length > 0 ? (
-                    // <TransfersList transfers={lastAddedTransfers} />
-                    <p>TransfersList</p>
+                    <TransfersList transfers={lastAddedTransfers} />
                   ) : (
                     <p className="noTransfersInfo">
                       <FaInfoCircle /> przez ostatnie 24h nie dodano żadnych
@@ -72,8 +83,7 @@ export default function HomePage() {
               ) : (
                 <>
                   {transfers.length > 0 ? (
-                    // <TransfersList transfers={next5transfers} />
-                    <p>TransfersList</p>
+                    <TransfersList transfers={next5transfers} />
                   ) : (
                     <p className="noTransfersInfo">
                       <FaInfoCircle /> w najbliższych 24h nie ma żadnych
@@ -89,7 +99,7 @@ export default function HomePage() {
           </Link>
         </div>
       ) : (
-        <div className="container">
+        <div className="containerU">
           <div className="titleContainer">
             <h3>5 najbliższych transferów</h3>
           </div>
@@ -100,7 +110,6 @@ export default function HomePage() {
               {transfers.length > 0 ? (
                 <TransfersList transfers={transfers} />
               ) : (
-                // <p>TransfersList</p>
                 <p className="noTransfersInfo">
                   <FaInfoCircle /> w najbliższym czasie nie ma żadnych
                   transferów
@@ -151,7 +160,7 @@ const Wrapper = styled.div`
     z-index: 1;
     height: 100%;
     min-height: 74vh;
-    width: 100vw;
+    width: 100%;
     padding: 10vh 3vw 3vh;
     background-color: rgba(0, 0, 0, 0.5);
     .titleContainer {
@@ -227,10 +236,7 @@ const Wrapper = styled.div`
       span {
         font-size: 1rem;
       }
-      :hover {
-        border-bottom: 2px solid var(--secondaryColor);
-        opacity: 0.8;
-      }
+
       @media screen and (max-width: 900px) {
         font-size: 0.8rem;
         opacity: 0.6;
@@ -239,8 +245,12 @@ const Wrapper = styled.div`
         }
       }
     }
+    .noActive:hover {
+      border-bottom: 2px solid var(--secondaryColor);
+      opacity: 0.8;
+    }
   }
-  .container {
+  .containerU {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -301,13 +311,13 @@ const Wrapper = styled.div`
       svg {
         display: none;
       }
-      :hover {
-        border-bottom: 2px solid var(--secondaryColor);
-        opacity: 0.8;
-      }
       @media screen and (max-width: 900px) {
         font-size: 0.9rem;
       }
+    }
+    .noActive:hover {
+      border-bottom: 2px solid var(--secondaryColor);
+      opacity: 0.8;
     }
   }
   .noTransfersInfo {
@@ -349,14 +359,15 @@ const Wrapper = styled.div`
     cursor: pointer;
     transition: 0.4s;
     margin: 5vh auto 5vh;
-    :hover {
-      background: #000;
-      color: #fff;
-      border: 2px solid #fff;
-    }
+
     @media screen and (max-width: 900px) {
       font-weight: 600;
       font-size: 0.9rem;
     }
+  }
+  .allTransfers:hover {
+    background: #000;
+    color: #fff;
+    border: 2px solid #fff;
   }
 `;

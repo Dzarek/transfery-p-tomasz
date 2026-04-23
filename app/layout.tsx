@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/components/authContext";
-import { AppProvider as AppProvider2 } from "@/components/context";
+import { AppProvider2 } from "@/components/context";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,18 +32,22 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+  const allowedUID = process.env.ADMIN_ID;
+  const isAdmin = session && session.uid === allowedUID;
+
   return (
     <html
       lang="pl"
       className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} h-full antialiased app`}
     >
       <AppProvider>
-        <AppProvider2>
+        <AppProvider2 isAdmin={isAdmin || false}>
           <body className="relative">
             <Toaster
               position="top-center"
@@ -49,7 +55,7 @@ export default function RootLayout({
                 top: 100,
               }}
             />
-            {/* <Navbar /> */}
+            <Navbar />
             {children}
             <Footer />
           </body>

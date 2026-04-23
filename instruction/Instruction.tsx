@@ -58,10 +58,14 @@ const adminMenu = [
   },
 ];
 
-const Instruction = ({ setShowInstruction }) => {
+const Instruction = ({
+  setShowInstruction,
+}: {
+  setShowInstruction: (showInstruction: boolean) => void;
+}) => {
   const { isAdmin } = useGlobalContext();
   const [activeTip, setActiveTip] = useState(
-    isAdmin ? adminMenu[0] : hotelMenu[0]
+    isAdmin ? adminMenu[0] : hotelMenu[0],
   );
 
   return (
@@ -95,7 +99,6 @@ const Instruction = ({ setShowInstruction }) => {
               src={activeTip.video}
               controls
               playsInline
-              type="video/mp4"
               className="video"
             ></video>
           </div>
@@ -119,7 +122,6 @@ const Instruction = ({ setShowInstruction }) => {
               src={activeTip.video}
               controls
               playsInline
-              type="video/mp4"
               className="video"
             ></video>
           </div>
@@ -208,6 +210,7 @@ const Wrapper = styled.div`
       width: 28%;
       padding: 2vh 0;
       border-right: 2px solid #222;
+      list-style: circle;
       p {
         margin-bottom: 5vh;
       }
@@ -219,9 +222,9 @@ const Wrapper = styled.div`
         cursor: pointer;
         transition: 0.4s;
         width: 100%;
-        :hover {
-          color: var(--secondaryColor);
-        }
+      }
+      li:hover {
+        color: var(--secondaryColor);
       }
       .activeTip {
         color: var(--secondaryColor);

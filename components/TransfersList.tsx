@@ -232,6 +232,7 @@ const Wrapper = styled.ul`
   width: 100%;
   max-width: 1680px;
   margin: 5vh auto;
+  padding: 0;
   li {
     width: 100%;
     background: #fff;

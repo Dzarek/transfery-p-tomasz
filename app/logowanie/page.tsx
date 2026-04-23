@@ -6,8 +6,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
 
-const loginBg = "/images/loginBg.jpg";
-
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -78,7 +76,10 @@ const LoginPage = () => {
   };
 
   return (
-    <WrapperBG>
+    <div
+      className="w-screen z-50 h-scren fixed inset-0 flex items-center justify-center bg-cover bg-bottom loginBganimate"
+      style={{ backgroundImage: "url(/images/loginBg.jpg)" }}
+    >
       <Wrapper>
         {forgotPassword ? (
           <div className="container">
@@ -167,34 +168,9 @@ const LoginPage = () => {
           </div>
         )}
       </Wrapper>
-    </WrapperBG>
+    </div>
   );
 };
-
-const WrapperBG = styled.div`
-  background-image: url(${loginBg});
-  background-position: bottom right;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100vw;
-  min-height: 100vh;
-  min-height: 100dvh;
-  animation: bgMove 15s linear infinite alternate;
-  z-index: 9999;
-  @keyframes bgMove {
-    0% {
-      background-size: 100%;
-    }
-    100% {
-      background-size: 110%;
-    }
-  }
-  @media screen and (max-width: 1200px) {
-    animation: none;
-  }
-`;
 
 const Wrapper = styled.div`
   position: absolute;

@@ -180,3 +180,22 @@ html::-webkit-scrollbar-thumb:hover {
     border-radius: 0 0 5px 0;
   }
 }
+
+@keyframes bgMove {
+  0% {
+    background-size: 100%;
+  }
+  100% {
+    background-size: 110%;
+  }
+}
+
+.loginBganimate {
+  animation: bgMove 15s linear infinite alternate;
+}
+
+@media screen and (max-width: 1200px) {
+  .loginBganimate {
+    animation: none;
+  }
+}
