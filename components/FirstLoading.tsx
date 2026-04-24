@@ -24,7 +24,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   background: #000;
-  position: relative;
+  position: fixed;
   z-index: 99999;
   .videoContainer {
     position: absolute;

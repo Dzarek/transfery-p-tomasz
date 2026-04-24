@@ -82,7 +82,7 @@ export default function HomePage() {
                 <Loading />
               ) : (
                 <>
-                  {transfers.length > 0 ? (
+                  {next5transfers.length > 0 ? (
                     <TransfersList transfers={next5transfers} />
                   ) : (
                     <p className="noTransfersInfo">

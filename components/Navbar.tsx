@@ -337,6 +337,7 @@ const Navbar = () => {
           </section>
         </Wrapper3>
       )}
+
       {openImportModal && (
         <ImportModal setOpenImportModal={setOpenImportModal} />
       )}

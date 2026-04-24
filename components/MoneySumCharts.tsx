@@ -1,5 +1,5 @@
 "use client";
-
+import styled from "styled-components";
 import { useState, useMemo } from "react";
 import { useGlobalContext } from "./context";
 import { MdOutlineClose } from "react-icons/md";
@@ -110,60 +110,36 @@ const MoneySumCharts = ({ setOpenMoneyCharts }: Props) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white border-4 border-[var(--secondaryColor)] overflow-y-auto">
-      <div className="w-full min-h-screen flex flex-col items-center py-10 px-4 relative">
-        {/* CLOSE */}
-        <MdOutlineClose
-          className="absolute top-4 right-6 text-4xl text-[var(--secondaryColor)] cursor-pointer hover:rotate-180 transition"
-          onClick={() => setOpenMoneyCharts(false)}
-        />
+    <Wrapper>
+      <CloseIcon onClick={() => setOpenMoneyCharts(false)} />
 
-        {/* TITLE */}
-        <h3 className="text-2xl md:text-3xl uppercase text-[var(--secondaryColor)] tracking-widest mt-16 mb-10 text-center">
-          Zestawienie Zarobków
-        </h3>
-
-        {/* MONTH SWITCH */}
-        <button className="flex items-center text-lg md:text-2xl font-semibold mb-8">
+      <Container>
+        <Title>Zestawienie Zarobków</Title>
+        <MonthBtn>
           {dataSource.label.toUpperCase()}
           {activeMonth ? (
-            <IoMdArrowDropupCircle
-              className="ml-2 text-2xl text-[var(--secondaryColor)] cursor-pointer"
-              onClick={handleChangeMonth}
-            />
+            <IoMdArrowDropupCircle onClick={() => setActiveMonth(false)} />
           ) : (
-            <IoMdArrowDropdownCircle
-              className="ml-2 text-2xl text-[var(--secondaryColor)] cursor-pointer"
-              onClick={handleChangeMonth}
-            />
+            <IoMdArrowDropdownCircle onClick={() => setActiveMonth(true)} />
           )}
-        </button>
+        </MonthBtn>
 
-        {/* SUMMARY */}
-        <section className="w-full bg-[#222] text-white text-center py-4 mb-10">
+        <Summary>
           <h4>
-            cały zysk ={" "}
-            <span className="text-[var(--secondaryColor)] font-bold">
-              {dataSource.total} PLN
-            </span>
+            cały zysk = <span>{dataSource.total} PLN</span>
           </h4>
           <h4>
-            prowizja hoteli ={" "}
-            <span className="text-[var(--secondaryColor)] font-bold">
-              {dataSource.provisionAll} PLN
-            </span>
+            prowizja hoteli = <span>{dataSource.provisionAll} PLN</span>
           </h4>
-        </section>
+        </Summary>
 
-        <div className="flex flex-col md:flex-row w-full max-w-6xl items-center justify-around gap-10">
-          {/* LEFT */}
-          <div className="flex flex-col items-center w-full md:w-1/2">
-            <label className="text-lg font-medium">Wybierz Hotel:</label>
+        <Main>
+          <Left>
+            <label>Wybierz Hotel:</label>
 
             <select
               value={userSelect}
               onChange={(e) => handleActiveHotel(e.target.value)}
-              className="w-4/5 mt-4 mb-6 p-2 border-2 border-[var(--secondaryColor)] rounded text-center font-semibold uppercase"
             >
               {usersOptions.map((u) => (
                 <option key={u.id} value={u.userName}>
@@ -173,44 +149,205 @@ const MoneySumCharts = ({ setOpenMoneyCharts }: Props) => {
             </select>
 
             {userSelect !== "---" && (
-              <div className="text-center space-y-2">
+              <article>
                 <p>
-                  prowizja hotelu ={" "}
-                  <span className="text-[var(--secondaryColor)] font-bold">
-                    {dataSource.userProvision} PLN
-                  </span>
+                  prowizja hotelu = <span>{dataSource.userProvision} PLN</span>
                 </p>
                 <p>
-                  zysk z hotelu ={" "}
-                  <span className="text-[var(--secondaryColor)] font-bold">
-                    {dataSource.userEarn} PLN
-                  </span>
+                  zysk z hotelu = <span>{dataSource.userEarn} PLN</span>
                 </p>
-              </div>
+              </article>
             )}
-          </div>
+          </Left>
 
-          {/* RIGHT */}
-          <div className="w-full md:w-1/2 flex justify-center">
-            {chartData ? (
-              <div className="w-[80%] md:w-[60%]">
-                <h4 className="text-center font-bold mb-4 uppercase">
-                  zarobek <span>{userSelect}</span> do całości
-                </h4>
-                <Pie data={chartData} />
-              </div>
-            ) : (
-              <img
-                src="/images/chartsImg.png"
-                alt="charts"
-                className="w-2/3 md:w-1/2"
-              />
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+          {userSelect !== "---" ? (
+            <ChartWrapper>
+              <h4>
+                zarobek <span>{userSelect}</span> do całości
+              </h4>
+              <Pie data={chartData!} />
+            </ChartWrapper>
+          ) : (
+            <img src="/images/chartsImg.png" alt="" />
+          )}
+        </Main>
+      </Container>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  border: 4px solid var(--secondaryColor);
+`;
+
+const Container = styled.div`
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 5vh 0 5vh;
+`;
+
+const CloseIcon = styled(MdOutlineClose)`
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  font-size: 2.5rem;
+  color: var(--secondaryColor);
+  cursor: pointer;
+  transition: 0.4s;
+  z-index: 99999;
+  &:hover {
+    transform: rotate(180deg);
+  }
+`;
+
+const Title = styled.h3`
+  text-transform: uppercase;
+  color: var(--secondaryColor);
+  font-size: 1.8rem;
+  margin-bottom: 8vh;
+  margin-top: 5vh;
+  letter-spacing: 2px;
+`;
+
+const MonthBtn = styled.button`
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 5vh;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  svg {
+    margin-left: 10px;
+    font-size: 1.8rem;
+    color: var(--secondaryColor);
+    transition: 0.3s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+`;
+
+const Summary = styled.section`
+  width: 100%;
+  background: #222;
+  color: white;
+  padding: 20px 10px;
+  margin-bottom: 5vh;
+  text-align: center;
+
+  h4 {
+    margin-bottom: 1vh;
+    font-size: 1.2rem;
+  }
+
+  span {
+    color: var(--secondaryColor);
+    font-weight: bold;
+  }
+`;
+
+const Main = styled.div`
+  width: 80%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  img {
+    width: 40%;
+  }
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+
+    img {
+      width: 70%;
+    }
+  }
+`;
+
+const Left = styled.div`
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  label {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  select {
+    width: 80%;
+    margin: 2vh 0 4vh;
+    padding: 7px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    border: 2px solid var(--secondaryColor);
+    border-radius: 5px;
+    background: var(--secondaryColorLight2);
+  }
+
+  article {
+    text-align: center;
+
+    p {
+      margin-top: 1vh;
+      font-size: 1.2rem;
+    }
+
+    span {
+      color: var(--secondaryColor);
+      font-weight: bold;
+    }
+  }
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
+`;
+
+const ChartWrapper = styled.div`
+  width: 40%;
+  margin-top: 3vh;
+  text-align: center;
+
+  h4 {
+    margin-bottom: 2vh;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  span {
+    color: var(--secondaryColor);
+  }
+
+  @media (max-width: 900px) {
+    width: 80%;
+  }
+`;
 
 export default MoneySumCharts;

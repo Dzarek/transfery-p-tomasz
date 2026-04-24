@@ -17,7 +17,7 @@ import {
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
+  // signOut,
   onAuthStateChanged,
   updateProfile,
   getAuth,
@@ -28,6 +28,8 @@ import * as XLSX from "xlsx";
 import { sendConfirmationCancel } from "../lib/api";
 // import { subscribe } from "./Notification";
 import { useRouter } from "next/navigation";
+import { logout } from "@/lib/user.actions";
+import { signOut } from "next-auth/react";
 
 // --- TYPY I INTERFEJSY ---
 
@@ -127,11 +129,11 @@ export interface AppContextType {
   changePassword: () => Promise<void>;
   changePasswordWhenLogin: (email: string) => Promise<void>;
   updateHotelPrice: () => void;
-  // createNewUser: (
-  //   email: string,
-  //   password: string,
-  //   newName: string,
-  // ) => Promise<void>;
+  createNewUser: (
+    email: string,
+    password: string,
+    newName: string,
+  ) => Promise<void>;
   disableUser: () => Promise<void>;
   getAllUsers: () => Promise<void>;
   exportData: () => void;
@@ -194,57 +196,55 @@ export const AppProvider2: React.FC<{
 
   // Dla Admina
   const { next5transfers, lastAddedTransfers } = useMemo(() => {
+    const now = moment();
+    const tomorrowEnd = moment().add(1, "day").endOf("day");
+
     if (!isAdmin) {
-      // Dla zwykłego użytkownika: Najbliższe 5 transferów
       const next5 = activeTransfers
         .filter((item) => {
-          const ms =
-            Number(item.time.split(":")[0]) * 3600000 +
-            Number(item.time.split(":")[1]) * 60000;
-          return moment(item.date).valueOf() + ms > moment().valueOf();
+          const [h, m] = item.time.split(":").map(Number);
+          const dateTime = moment(item.date).add(h, "hours").add(m, "minutes");
+
+          return dateTime.isAfter(now);
         })
         .slice(0, 5);
+
       return { next5transfers: next5, lastAddedTransfers: [] };
-    } else {
-      // Dla Admina z tablicy wszystkich transferów
-      const sorted = [...allUsersTransfers].sort((a, b) => {
-        const msA =
-          Number(a.time.split(":")[0]) * 3600000 +
-          Number(a.time.split(":")[1]) * 60000;
-        const msB =
-          Number(b.time.split(":")[0]) * 3600000 +
-          Number(b.time.split(":")[1]) * 60000;
-        return (
-          new Date(a.date).getTime() + msA - (new Date(b.date).getTime() + msB)
-        );
-      });
-
-      const homePage = sorted.filter((item) => {
-        const ms =
-          Number(item.time.split(":")[0]) * 3600000 +
-          Number(item.time.split(":")[1]) * 60000;
-        return moment(item.date).valueOf() + ms > moment().valueOf();
-      });
-
-      const adminNext5 = homePage
-        .filter((item) => {
-          const ms =
-            Number(item.time.split(":")[0]) * 3600000 +
-            Number(item.time.split(":")[1]) * 60000;
-          return (
-            moment(item.date).valueOf() + ms < moment().add(1, "days").valueOf()
-          );
-        })
-        .filter((item) => item.status !== "cancel");
-
-      const lastAdded = homePage.filter(
-        (item) =>
-          item.createdDate > moment().subtract(1, "days").valueOf() &&
-          item.status !== "cancel",
-      );
-
-      return { next5transfers: adminNext5, lastAddedTransfers: lastAdded };
     }
+
+    const sorted = [...allUsersTransfers].sort((a, b) => {
+      const [hA, mA] = a.time.split(":").map(Number);
+      const [hB, mB] = b.time.split(":").map(Number);
+
+      const dateA = moment(a.date).add(hA, "hours").add(mA, "minutes");
+      const dateB = moment(b.date).add(hB, "hours").add(mB, "minutes");
+
+      return dateA.valueOf() - dateB.valueOf();
+    });
+
+    const homePage = sorted.filter((item) => {
+      const [h, m] = item.time.split(":").map(Number);
+      const dateTime = moment(item.date).add(h, "hours").add(m, "minutes");
+
+      return dateTime.isAfter(now);
+    });
+
+    const adminNext5 = homePage
+      .filter((item) => {
+        const [h, m] = item.time.split(":").map(Number);
+        const dateTime = moment(item.date).add(h, "hours").add(m, "minutes");
+
+        return dateTime.isBefore(tomorrowEnd);
+      })
+      .filter((item) => item.status !== "cancel");
+
+    const lastAdded = homePage.filter(
+      (item) =>
+        item.createdDate > moment().subtract(1, "days").valueOf() &&
+        item.status !== "cancel",
+    );
+
+    return { next5transfers: adminNext5, lastAddedTransfers: lastAdded };
   }, [activeTransfers, allUsersTransfers, isAdmin]);
 
   // Kalkulacje finansowe - User
@@ -313,21 +313,26 @@ export const AppProvider2: React.FC<{
 
   // --- AUTH METHODS ---
 
-  // const createNewUser = async (
-  //   email: string,
-  //   password: string,
-  //   newName: string,
-  // ) => {
-  //   await createUserWithEmailAndPassword(auth, email, password);
-  //   if (!authInstance.currentUser) return;
-  //   const userRef = doc(db, "usersList", authInstance.currentUser.uid);
-  //   await setDoc(
-  //     userRef,
-  //     { userName: newName, activeAccount: true, money: money },
-  //     { merge: true },
-  //   );
-  //   logout();
-  // };
+  const handleLogout = async () => {
+    await logout();
+    await signOut({ callbackUrl: "/logowanie" });
+  };
+
+  const createNewUser = async (
+    email: string,
+    password: string,
+    newName: string,
+  ) => {
+    await createUserWithEmailAndPassword(auth, email, password);
+    if (!authInstance.currentUser) return;
+    const userRef = doc(db, "usersList", authInstance.currentUser.uid);
+    await setDoc(
+      userRef,
+      { userName: newName, activeAccount: true, money: money },
+      { merge: true },
+    );
+    handleLogout();
+  };
 
   // const login = async (email: string, password: string) => {
   //   await logout();
@@ -414,36 +419,26 @@ export const AppProvider2: React.FC<{
   };
 
   useEffect(() => {
-    // Nie ustawiamy już synchronicznie setLoading(true), bo domyślnie w useState jest true.
-
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+
       if (user) {
         setUserID(user.uid);
         setName(user.displayName);
-        if (user.uid === process.env.NEXT_PUBLIC_ADMIN_ID) {
-          // isAdmin nie musi być stanem, może być zmienną pochodną
-          // Wywołujemy pobieranie danych jako reakcję na zdarzenie (zalogowanie)
-          getAllUsers();
-        }
-        const getData = doc(db, `usersList/${user.uid}`);
-        const data2 = await getDoc(getData);
 
-        // if (data2.data()?.activeAccount === false) {
-        //   logout();
-        //   alert("Konto zostało usunięte!");
-        // }
+        if (isAdmin) {
+          await getAllUsers(); // 🔥 tu jest OK
+        }
+
+        const getData = doc(db, `usersList/${user.uid}`);
+        await getDoc(getData);
       }
 
-      // Asynchroniczna akcja (sprawdzenie logowania) się zakończyła.
-      // Teraz bezpiecznie zdejmujemy loader.
       setLoading(false);
     });
 
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+    return () => unsubscribe();
+  }, [isAdmin]); // 🔥 WAŻNE
 
   // --- USER METHODS ---
 
@@ -790,7 +785,7 @@ export const AppProvider2: React.FC<{
         changePassword,
         changePasswordWhenLogin,
         updateHotelPrice,
-        // createNewUser,
+        createNewUser,
         disableUser,
         getAllUsers,
         exportData,
