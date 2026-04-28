@@ -84,6 +84,14 @@ const ReservationPage = () => {
     setSpecialTransfer(false);
   };
 
+  const handleEmailConfirm = async () => {
+    const convertDate = moment(date).format("L");
+    const data = { name, convertDate };
+    console.log(data);
+
+    await sendConfirmation(data);
+  };
+
   // 🔹 SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,10 +148,7 @@ const ReservationPage = () => {
         specialTransfer,
       );
 
-      await sendConfirmation({
-        name,
-        convertDate: moment(date).format("L"),
-      });
+      await handleEmailConfirm();
 
       setSendForm(true);
 
@@ -199,6 +204,7 @@ const ReservationPage = () => {
                 min={minDate}
                 max={maxDate}
                 onChange={(e) => setDate(e.target.value)}
+                required
               />
             </section>
 
@@ -209,6 +215,7 @@ const ReservationPage = () => {
                 value={time}
                 min={date === minDate ? minTime : undefined}
                 onChange={(e) => setTime(e.target.value)}
+                required
               />
             </section>
           </div>
@@ -219,6 +226,7 @@ const ReservationPage = () => {
             <input
               value={nameOfGuest}
               onChange={(e) => setNameOfGuest(e.target.value)}
+              required
             />
           </section>
 
@@ -228,6 +236,7 @@ const ReservationPage = () => {
             <select
               value={direction}
               onChange={(e) => setDirection(e.target.value)}
+              required
             >
               {directions.map((d, i) => (
                 <option key={i}>{d}</option>
@@ -245,13 +254,17 @@ const ReservationPage = () => {
                 max={specialTransfer ? 99 : 8}
                 value={people}
                 onChange={(e) => setPeople(e.target.value)}
+                required
               />
+              <p>(max {specialTransfer ? "99" : "8"})</p>
             </section>
 
             <section>
               <label>Numer lotu:</label>
               <input
                 value={flight}
+                required={direction === `Kraków Airport - ${name}`}
+                type="text"
                 onChange={(e) => setFlight(e.target.value)}
               />
             </section>
@@ -262,6 +275,7 @@ const ReservationPage = () => {
                 type="number"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                required
               />
             </section>
           </div>
@@ -269,6 +283,7 @@ const ReservationPage = () => {
           <section>
             <label>Uwagi:</label>
             <input
+              type="text"
               value={details}
               onChange={(e) => setDetails(e.target.value)}
             />

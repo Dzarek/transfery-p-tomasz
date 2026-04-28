@@ -1,50 +1,51 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import { mailOptions, transporter } from "@/configEmail/nodemailer";
 import { render } from "@react-email/render";
 import { Email } from "@/configEmail/emailSkin";
 import React from "react";
 
-type Data = { success: true } | { message: string };
+export const POST = async (req: NextRequest) => {
+  if (req.method === "POST") {
+    const body = await req.json();
+    const data = body;
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
-  }
-
-  try {
-    const { name, convertDate } = req.body as {
-      name?: string;
-      convertDate?: string;
-    };
-
-    if (!name || !convertDate) {
-      return res.status(400).json({ message: "Brak danych" });
+    if (!data) {
+      return NextResponse.json({ message: "Bad request" });
     }
 
-    const dataUpperCase = name.toUpperCase();
+    try {
+      const { name, convertDate } = data as {
+        name?: string;
+        convertDate?: string;
+      };
 
-    const emailHtml = render(
-      React.createElement(Email, {
-        dataUpperCase,
-        convertDate,
-      }),
-    );
+      if (!name || !convertDate) {
+        return NextResponse.json({ message: "Brak danych" });
+      }
 
-    await transporter.sendMail({
-      ...mailOptions,
-      subject: `NOWY TRANSFER OD ${dataUpperCase}`,
-      text: `Nowy transfer od ${dataUpperCase} w dniu ${convertDate}`,
-      html: emailHtml,
-    });
+      const dataUpperCase = name.toUpperCase();
 
-    return res.status(200).json({ success: true });
-  } catch (error) {
-    console.error(error);
+      const emailHtml = render(
+        React.createElement(Email, {
+          dataUpperCase,
+          convertDate,
+        }),
+      );
 
-    return res.status(500).json({
-      message: "Błąd wysyłki maila",
-    });
+      await transporter.sendMail({
+        ...mailOptions,
+        subject: `NOWY TRANSFER OD ${dataUpperCase}`,
+        text: `Nowy transfer od ${dataUpperCase} w dniu ${convertDate}`,
+        html: emailHtml,
+      });
+
+      return NextResponse.json({ success: true });
+    } catch (error) {
+      console.error(error);
+
+      return NextResponse.json({ message: error });
+    }
   }
-};
 
-export default handler;
+  return NextResponse.json({ message: "Bad request" });
+};
