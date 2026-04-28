@@ -38,7 +38,7 @@ export default function HomePage() {
   }
 
   return (
-    <Wrapper>
+    <Wrapper className="homepageBg">
       {session.isAdmin ? (
         <div className="containerAdmin">
           <div className="titleContainer">
@@ -132,7 +132,7 @@ const Wrapper = styled.div`
   min-height: 74vh;
   width: 100vw;
   position: relative;
-  background-image: url(${bg3});
+  /* background-image: url(${bg3}); */
   background-size: cover;
   background-attachment: fixed;
   background-repeat: no-repeat;

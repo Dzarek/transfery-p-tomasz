@@ -25,7 +25,7 @@ const Wrapper = styled.div`
   align-items: center;
   background: #000;
   position: fixed;
-  z-index: 99999;
+  z-index: 9999999;
   .videoContainer {
     position: absolute;
     top: 50%;

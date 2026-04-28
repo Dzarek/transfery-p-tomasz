@@ -76,10 +76,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div
-      className="w-screen z-50 h-scren fixed inset-0 flex items-center justify-center bg-cover bg-bottom loginBganimate"
-      style={{ backgroundImage: "url(/images/loginBg.jpg)" }}
-    >
+    <div className="w-screen z-50 h-scren fixed inset-0 flex items-center justify-center bg-cover bg-bottom loginBganimate">
       <Wrapper>
         {forgotPassword ? (
           <div className="container">

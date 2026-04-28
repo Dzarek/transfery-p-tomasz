@@ -9,7 +9,12 @@ import { Section } from "@react-email/section";
 import { Text } from "@react-email/text";
 import { Row } from "@react-email/row";
 
-export const Email = ({ dataUpperCase, convertDate }) => (
+type EmailProps = {
+  dataUpperCase: string;
+  convertDate: string;
+};
+
+export const Email = ({ dataUpperCase, convertDate }: EmailProps) => (
   <Html>
     <Head />
     <Body style={main}>
@@ -24,12 +29,14 @@ export const Email = ({ dataUpperCase, convertDate }) => (
             NOWY TRANSFER OD {dataUpperCase}
           </Heading>
         </Row>
+
         <Section style={content}>
           <Text style={paragraph}>
             <strong>{dataUpperCase}</strong> dodał nowy transfer w terminie{" "}
             <strong>{convertDate}</strong>. <br />
             Potwierdź zlecenie w aplikacji!
           </Text>
+
           <Section style={buttonContainer}>
             <Link style={button} href="https://yallaway.pl/">
               otwórz aplikację
@@ -55,7 +62,7 @@ const header = {
   backgroundColor: "#222",
   width: "100%",
   padding: "0 20px",
-};
+} as const;
 const imgHeader = {
   width: "100%",
 };
@@ -68,7 +75,7 @@ const headerContentTitle = {
   marginTop: "30px",
   textAlign: "center",
   width: "100%",
-};
+} as const;
 
 const paragraph = {
   fontSize: "15px",

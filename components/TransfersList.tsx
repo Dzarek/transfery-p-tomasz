@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import moment from "moment/min/moment-with-locales";
 import Aos from "aos";
 import "aos/dist/aos.css";
-
+import DeleteModal from "./DeleteModal";
 import { IoCalendar, IoBody } from "react-icons/io5";
 import { IoMdTrash } from "react-icons/io";
 import { TbArrowsLeftRight } from "react-icons/tb";
@@ -44,7 +44,8 @@ type Transfer = {
 };
 
 const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
-  const { setConfirmDelete, setDeleteId, isAdmin } = useGlobalContext();
+  const { setConfirmDelete, setDeleteId, isAdmin, confirmDelete } =
+    useGlobalContext();
   const [showModal, setShowModal] = useState<string | null>(null);
 
   const pathname = usePathname();
@@ -67,163 +68,172 @@ const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
   };
 
   return (
-    <Wrapper>
-      {transfers.map((item) => {
-        const {
-          id,
-          status,
-          date,
-          time,
-          nameOfGuest,
-          direction,
-          people,
-          details,
-          flight,
-          phone,
-          price,
-          provision,
-          specialTransfer,
-        } = item;
+    <>
+      <Wrapper>
+        {transfers.map((item) => {
+          const {
+            id,
+            status,
+            date,
+            time,
+            nameOfGuest,
+            direction,
+            people,
+            details,
+            flight,
+            phone,
+            price,
+            provision,
+            specialTransfer,
+          } = item;
 
-        const convertDate = moment(date).format("L");
-        const timestamp = getTimestamp(date, time);
-        const isOld = timestamp < now;
+          const convertDate = moment(date).format("L");
+          const timestamp = getTimestamp(date, time);
+          const isOld = timestamp < now;
 
-        const liClass =
-          status === "cancel"
-            ? "cancel"
-            : convertDate === currentDay
-              ? "todayClass"
-              : "";
+          const liClass =
+            status === "cancel"
+              ? "cancel"
+              : convertDate === currentDay
+                ? "todayClass"
+                : "";
 
-        return (
-          <div key={id} className={isOld ? "classOld" : ""} data-aos="zoom-in">
-            <li
-              className={liClass}
-              style={{
-                borderColor: specialTransfer ? "rgb(59, 122, 204)" : undefined,
-              }}
+          return (
+            <div
+              key={id}
+              className={isOld ? "classOld" : ""}
+              data-aos="zoom-in"
             >
-              {/* STATUS */}
-              {status === "ok" && (
-                <p className="status good">
-                  <ImCheckboxChecked />
-                </p>
-              )}
-              {status === "pending" && (
-                <p className="status pending">
-                  <ImCheckboxUnchecked />
-                </p>
-              )}
-              {status === "cancel" && (
-                <p className="status cancel">
-                  <MdCancel />
-                </p>
-              )}
-
-              {/* INFO */}
-              <div className="info">
-                <section>
-                  <p>
-                    <IoCalendar />
-                    {convertDate}
+              <li
+                className={liClass}
+                style={{
+                  borderColor: specialTransfer
+                    ? "rgb(59, 122, 204)"
+                    : undefined,
+                }}
+              >
+                {/* STATUS */}
+                {status === "ok" && (
+                  <p className="status good">
+                    <ImCheckboxChecked />
                   </p>
-                  <p>
-                    <MdAccessTimeFilled />
-                    {time}
+                )}
+                {status === "pending" && (
+                  <p className="status pending">
+                    <ImCheckboxUnchecked />
                   </p>
-                </section>
-
-                <section>
-                  <p>
-                    <MdPerson />
-                    {nameOfGuest}
+                )}
+                {status === "cancel" && (
+                  <p className="status cancel">
+                    <MdCancel />
                   </p>
-                </section>
-
-                <section>
-                  <p>
-                    <TbArrowsLeftRight />
-                    {direction}
-                  </p>
-                </section>
-
-                <section>
-                  <p>
-                    <IoBody /> {people}
-                  </p>
-                  <p>
-                    <MdOutlineAirplanemodeActive />
-                    {flight}
-                  </p>
-                </section>
-
-                <section>
-                  <p>
-                    <MdSmartphone /> +{phone}
-                  </p>
-                </section>
-
-                {details && (
-                  <section>
-                    <div>
-                      <MdInfo onClick={() => setShowModal(id)} />
-                      <div
-                        className={
-                          showModal === id
-                            ? "infoModal activeInfo"
-                            : "infoModal"
-                        }
-                      >
-                        <p>
-                          <span>Uwagi:</span> {details}
-                        </p>
-                        <button onClick={() => setShowModal(null)}>
-                          <MdOutlineClose />
-                        </button>
-                      </div>
-                    </div>
-                  </section>
                 )}
 
-                <section>
-                  <p>
-                    <GiMoneyStack />
-                    {status !== "cancel" ? price : 0} PLN
-                  </p>
-                  <p>
-                    <GiReceiveMoney />
-                    {status !== "cancel" ? provision : 0} PLN
-                  </p>
-                </section>
-              </div>
+                {/* INFO */}
+                <div className="info">
+                  <section>
+                    <p>
+                      <IoCalendar />
+                      {convertDate}
+                    </p>
+                    <p>
+                      <MdAccessTimeFilled />
+                      {time}
+                    </p>
+                  </section>
 
-              {/* ACTIONS */}
-              {isAdmin &&
-                pathname !== "/" &&
-                !isOld &&
-                status === "pending" && (
+                  <section>
+                    <p>
+                      <MdPerson />
+                      {nameOfGuest}
+                    </p>
+                  </section>
+
+                  <section>
+                    <p>
+                      <TbArrowsLeftRight />
+                      {direction}
+                    </p>
+                  </section>
+
+                  <section>
+                    <p>
+                      <IoBody /> {people}
+                    </p>
+                    <p>
+                      <MdOutlineAirplanemodeActive />
+                      {flight}
+                    </p>
+                  </section>
+
+                  <section>
+                    <p>
+                      <MdSmartphone /> +{phone}
+                    </p>
+                  </section>
+
+                  {details && (
+                    <section>
+                      <div>
+                        <MdInfo onClick={() => setShowModal(id)} />
+                        <div
+                          className={
+                            showModal === id
+                              ? "infoModal activeInfo"
+                              : "infoModal"
+                          }
+                        >
+                          <p>
+                            <span>Uwagi:</span> {details}
+                          </p>
+                          <button onClick={() => setShowModal(null)}>
+                            <MdOutlineClose />
+                          </button>
+                        </div>
+                      </div>
+                    </section>
+                  )}
+
+                  <section>
+                    <p>
+                      <GiMoneyStack />
+                      {status !== "cancel" ? price : 0} PLN
+                    </p>
+                    <p>
+                      <GiReceiveMoney />
+                      {status !== "cancel" ? provision : 0} PLN
+                    </p>
+                  </section>
+                </div>
+
+                {/* ACTIONS */}
+                {isAdmin &&
+                  pathname !== "/" &&
+                  !isOld &&
+                  status === "pending" && (
+                    <button
+                      className="deleteBtn"
+                      onClick={() => handleDeleteShow(id)}
+                    >
+                      <ImCheckmark style={{ color: "#598c50" }} />
+                    </button>
+                  )}
+
+                {!isAdmin && status !== "cancel" && !isOld && (
                   <button
                     className="deleteBtn"
                     onClick={() => handleDeleteShow(id)}
                   >
-                    <ImCheckmark style={{ color: "#598c50" }} />
+                    <IoMdTrash style={{ color: "darkred" }} />
                   </button>
                 )}
-
-              {!isAdmin && status !== "cancel" && !isOld && (
-                <button
-                  className="deleteBtn"
-                  onClick={() => handleDeleteShow(id)}
-                >
-                  <IoMdTrash style={{ color: "darkred" }} />
-                </button>
-              )}
-            </li>
-          </div>
-        );
-      })}
-    </Wrapper>
+              </li>
+            </div>
+          );
+        })}
+      </Wrapper>
+      {confirmDelete && <DeleteModal />}
+    </>
   );
 };
 

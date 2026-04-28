@@ -18,7 +18,6 @@ import { FaInfoCircle } from "react-icons/fa";
 import Link from "next/link";
 import Aos from "aos";
 import "aos/dist/aos.css";
-import { useRouter } from "next/navigation";
 import CreateUserModal from "./CreateUserModal";
 
 const bg = "/images/tBg.jpg";
@@ -36,12 +35,9 @@ const TransfersPage = () => {
     updateHotelPrice,
     disableUser,
     getAllUsers,
-    currentUser,
   } = useGlobalContext();
 
-  const router = useRouter();
-
-  const [page, setPage] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const pageSize = 5;
 
   const [moneyModal, setMoneyModal] = useState<any | null>(null);
@@ -55,13 +51,6 @@ const TransfersPage = () => {
     setActiveHotel(null);
   }, [setActiveHotel]);
 
-  // 🔹 REDIRECT
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/login");
-    }
-  }, [currentUser, router]);
-
   // 🔹 AUTO ACTIVE HOTEL (USER)
   useEffect(() => {
     if (!isAdmin) {
@@ -69,21 +58,25 @@ const TransfersPage = () => {
     }
   }, [isAdmin, setActiveHotel]);
 
-  // 🔹 START INDEX
-  const startIndex = useMemo(() => {
-    return transfers.findIndex(
+  const initialIndex = useMemo(() => {
+    if (transfers.length === 0) return 0;
+
+    const idx = transfers.findIndex(
       (t) => moment(t.date).valueOf() >= moment().subtract(1, "days").valueOf(),
     );
-  }, [transfers]);
+
+    return idx >= 0 ? idx : Math.max(transfers.length - pageSize, 0);
+  }, [transfers, pageSize]);
+
+  // 🔥 sync tylko przy pierwszym loadzie / zmianie danych
+  useEffect(() => {
+    setCurrentIndex(initialIndex);
+  }, [initialIndex]);
 
   // 🔹 PAGINATED TRANSFERS
   const visibleTransfers = useMemo(() => {
-    const start = startIndex >= 0 ? startIndex : 0;
-    return transfers.slice(
-      start + page * pageSize,
-      start + (page + 1) * pageSize,
-    );
-  }, [transfers, startIndex, page]);
+    return transfers.slice(currentIndex, currentIndex + pageSize);
+  }, [transfers, currentIndex]);
 
   // 🔹 HANDLERS
   const handleActiveHotel = (id: string) => {
@@ -93,11 +86,15 @@ const TransfersPage = () => {
   };
 
   const handleNext = () => {
-    setPage((prev) => prev + 1);
+    if (currentIndex + pageSize >= transfers.length) return;
+
+    setCurrentIndex((prev) => prev + pageSize);
   };
 
   const handlePrev = () => {
-    setPage((prev) => Math.max(prev - 1, 0));
+    if (currentIndex <= 0) return;
+
+    setCurrentIndex((prev) => Math.max(prev - pageSize, 0));
   };
 
   const handleHotelMoney = (id: string) => {
@@ -190,7 +187,7 @@ const TransfersPage = () => {
                 <Loading />
               ) : (
                 <>
-                  {page > 0 && (
+                  {currentIndex > 0 && (
                     <button className="arrow arrowLeft" onClick={handlePrev}>
                       <MdDoubleArrow />
                     </button>
