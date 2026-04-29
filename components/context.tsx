@@ -619,12 +619,12 @@ export const AppProvider2: React.FC<{
           convertDate,
           dataNameOfGuest: deletedItem.nameOfGuest,
         });
-        handleSub(
-          name || "",
-          deletedItem.date,
-          deletedItem.time,
-          deletedItem.id,
-        );
+        // handleSub(
+        //   name || "",
+        //   deletedItem.date,
+        //   deletedItem.time,
+        //   deletedItem.id,
+        // );
       }
 
       await putEdit(

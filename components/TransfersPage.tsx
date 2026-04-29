@@ -195,7 +195,7 @@ const TransfersPage = () => {
 
                   <TransfersList transfers={visibleTransfers} />
 
-                  {visibleTransfers.length === pageSize && (
+                  {transfers.length > pageSize + currentIndex && (
                     <button className="arrow arrowRight" onClick={handleNext}>
                       <MdDoubleArrow />
                     </button>
@@ -212,7 +212,7 @@ const TransfersPage = () => {
               )}
 
               {!isAdmin && (
-                <Link href="/reservation">
+                <Link href="/rezerwacja">
                   <button className="allTransfers">dodaj transfer</button>
                 </Link>
               )}

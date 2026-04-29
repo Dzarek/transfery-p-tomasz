@@ -87,8 +87,6 @@ const ReservationPage = () => {
   const handleEmailConfirm = async () => {
     const convertDate = moment(date).format("L");
     const data = { name, convertDate };
-    console.log(data);
-
     await sendConfirmation(data);
   };
 

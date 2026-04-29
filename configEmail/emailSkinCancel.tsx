@@ -9,7 +9,17 @@ import { Section } from "@react-email/section";
 import { Text } from "@react-email/text";
 import { Row } from "@react-email/row";
 
-export const Email = ({ dataUpperCase, convertDate, nameOfGuestUpperCase }) => (
+type EmailProps = {
+  dataUpperCase: string;
+  convertDate: string;
+  nameOfGuestUpperCase: string;
+};
+
+export const Email = ({
+  dataUpperCase,
+  convertDate,
+  nameOfGuestUpperCase,
+}: EmailProps) => (
   <Html>
     <Head />
     <Body style={main}>
@@ -18,7 +28,7 @@ export const Email = ({ dataUpperCase, convertDate, nameOfGuestUpperCase }) => (
           <Img
             style={imgHeader}
             width={180}
-            src="https://yallaway.pl/images/cancelEmail.png"
+            src="https://demo-transfers.vercel.app/images/cancelEmail.png"
           />
           <Heading style={headerContentTitle}>
             ANULACJA TRANSFERU OD {dataUpperCase}
@@ -31,7 +41,7 @@ export const Email = ({ dataUpperCase, convertDate, nameOfGuestUpperCase }) => (
             <strong>{nameOfGuestUpperCase}</strong>. <br /> Sprawdź w aplikacji!
           </Text>
           <Section style={buttonContainer}>
-            <Link style={button} href="https://yallaway.pl/">
+            <Link style={button} href="https://demo-transfers.vercel.app">
               otwórz aplikację
             </Link>
           </Section>
@@ -54,10 +64,11 @@ const header = {
   justifyContent: "center",
   backgroundColor: "#222",
   width: "100%",
-  padding: "0 20px",
-};
+  padding: "10px 20px",
+} as const;
 const imgHeader = {
-  width: "100%",
+  width: "50%",
+  margin: "0 auto",
 };
 
 const headerContentTitle = {
@@ -68,7 +79,7 @@ const headerContentTitle = {
   marginTop: "30px",
   textAlign: "center",
   width: "100%",
-};
+} as const;
 
 const paragraph = {
   fontSize: "15px",

@@ -1,39 +1,53 @@
+import { NextRequest, NextResponse } from "next/server";
 import { mailOptions, transporter } from "@/configEmail/nodemailer";
 import { render } from "@react-email/render";
 import { Email } from "@/configEmail/emailSkinCancel";
+import React from "react";
 
-const handler = async (req, res) => {
+export const POST = async (req: NextRequest) => {
   if (req.method === "POST") {
-    const data = req.body;
-    const dataUpperCase = data.name.toUpperCase();
-    const convertDate = data.convertDate;
-    const nameOfGuestUpperCase = data.dataNameOfGuest.toUpperCase();
-    const emailHtml = render(
-      <Email
-        dataUpperCase={dataUpperCase}
-        convertDate={convertDate}
-        nameOfGuestUpperCase={nameOfGuestUpperCase}
-      />
-    );
+    const body = await req.json();
+    const data = body;
     if (!data) {
-      return res.status(400).json({ message: "Bad request" });
+      return NextResponse.json({ message: "Bad request" });
     }
+
     try {
+      const { name, convertDate, dataNameOfGuest } = data as {
+        name?: string;
+        convertDate?: string;
+        dataNameOfGuest?: string;
+      };
+
+      if (!name || !convertDate || !dataNameOfGuest) {
+        return NextResponse.json({ message: "Brak danych" });
+      }
+
+      const dataUpperCase = name.toUpperCase();
+      const nameOfGuestUpperCase = dataNameOfGuest.toUpperCase();
+
+      const emailHtml = render(
+        React.createElement(Email, {
+          dataUpperCase,
+          convertDate,
+          nameOfGuestUpperCase,
+        }),
+      );
+
       await transporter.sendMail({
         ...mailOptions,
-        subject: `ANULACJA TRANSFERU OD ${dataUpperCase} NA ${data.convertDate}`,
+        subject: `ANULACJA TRANSFERU OD ${dataUpperCase} NA ${convertDate}`,
         text: "",
-        // html: `<p><strong>${dataUpperCase}</strong> anulował transfer na termin <strong>${data.convertDate}</strong> dla <strong>${nameOfGuestUpperCase}</strong> ! Sprawdź w aplikacji: https://airportgr8way.vercel.app/</p>`,
         html: emailHtml,
       });
-      return res.status(200).json({ success: true });
+
+      return NextResponse.json({ success: true });
     } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: error.message });
+      console.error(error);
+
+      return NextResponse.json({ message: error });
     }
   }
 
-  return res.status(400).json({ message: "Bad request" });
+  return NextResponse.json({ message: "Bad request" });
 };
-
-export default handler;

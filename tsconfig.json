@@ -29,7 +29,7 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-    "configEmail/emailSkinCancel.js",
+    "configEmail/emailSkinCancel.tsx",
     "components/context.js"
   ],
   "exclude": ["node_modules"]

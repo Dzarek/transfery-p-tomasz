@@ -8,7 +8,6 @@ import { useState } from "react";
 import { FaCar, FaInfoCircle } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import TransfersList from "./TransfersList";
-import FirstLoading from "./FirstLoading";
 
 const bg3 = "/images/img2.jpg";
 
@@ -17,10 +16,6 @@ export default function HomePage() {
     useGlobalContext();
   const [lastAddedList, setLastAddedList] = useState(false);
   const { data: session, status } = useSession();
-
-  if (status === "loading") {
-    return <FirstLoading />;
-  }
 
   if (status !== "authenticated") {
     return (
@@ -36,6 +31,7 @@ export default function HomePage() {
       </div>
     );
   }
+  console.log(next5transfers.length);
 
   return (
     <Wrapper className="homepageBg">
@@ -117,7 +113,7 @@ export default function HomePage() {
               )}
             </>
           )}
-          <Link href="/transfers">
+          <Link href="/transfery">
             <button className="allTransfers">zobacz wszystkie transfery</button>
           </Link>
         </div>

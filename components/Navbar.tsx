@@ -29,6 +29,7 @@ import { GiHomeGarage } from "react-icons/gi";
 import MoneySumCharts from "./MoneySumCharts";
 import ImportModal from "./ImportModal";
 import Instruction from "../instruction/Instruction";
+import FirstLoading from "./FirstLoading";
 
 const Navbar = () => {
   const { setIsLogin } = useGlobalContextAuth();
@@ -102,6 +103,10 @@ const Navbar = () => {
     });
   };
 
+  if (status === "loading") {
+    return <FirstLoading />;
+  }
+
   if (status !== "authenticated") {
     return <h2 className="w-1/2 m-10 text-2xl">Nie jesteś zalogowany</h2>;
   }
@@ -117,11 +122,7 @@ const Navbar = () => {
       ) : (
         <Instruction setShowInstruction={setShowInstruction} />
       )}
-      <Wrapper
-        style={{
-          borderBottom: pathname !== "/reservation" ? "4px solid #b99e81" : "",
-        }}
-      >
+      <Wrapper>
         <nav>
           {pathname !== "/" && (
             <Link href="/" className={isAdmin ? "adminNav" : ""}>
