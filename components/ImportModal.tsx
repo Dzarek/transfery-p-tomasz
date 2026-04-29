@@ -101,7 +101,7 @@ export default ImportModal;
 const Wrapper = styled.div`
   position: fixed;
   inset: 0;
-  z-index: 99;
+  z-index: 99999999;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -114,12 +114,12 @@ const Modal = styled.div`
   position: relative;
   width: 90vw;
   min-height: 50vh;
-
+  /* z-index: 99999999999; */
   background: var(--customDarkRed);
   border: 4px solid var(--secondaryColor2);
   border-radius: 5px;
   padding: 30px 30px;
-  z-index: 999999;
+  /* z-index: 999999; */
   @media (min-width: 768px) {
     width: 50vw;
   }
