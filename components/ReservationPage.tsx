@@ -90,6 +90,31 @@ const ReservationPage = () => {
     await sendConfirmation(data);
   };
 
+  const handleSub = async (
+    hotelNameStr: string,
+    date: string,
+    time: string,
+    id: string,
+  ) => {
+    const hotelName = hotelNameStr.replace(" - ", "").toUpperCase();
+    const title = `${hotelName} dodał transfer`;
+    const body = `DATA: ${date}, GODZINA: ${time}`;
+    const tag = id;
+    const recipeID = "";
+    await fetch("/api/push", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "notify",
+        type: "recipe",
+        title,
+        body,
+        tag,
+        recipeID,
+      }),
+    });
+  };
+
   // 🔹 SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,7 +172,7 @@ const ReservationPage = () => {
       );
 
       await handleEmailConfirm();
-
+      await handleSub(name || "Hotel", date, time, id);
       setSendForm(true);
 
       setTimeout(() => {

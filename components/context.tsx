@@ -619,12 +619,12 @@ export const AppProvider2: React.FC<{
           convertDate,
           dataNameOfGuest: deletedItem.nameOfGuest,
         });
-        // handleSub(
-        //   name || "",
-        //   deletedItem.date,
-        //   deletedItem.time,
-        //   deletedItem.id,
-        // );
+        handleSub(
+          name || "",
+          deletedItem.date,
+          deletedItem.time,
+          deletedItem.id,
+        );
       }
 
       await putEdit(
@@ -739,7 +739,23 @@ export const AppProvider2: React.FC<{
     id: string,
   ) => {
     const hotelName = hotelNameStr.replace(" - ", "").toUpperCase();
+    const title = `${hotelName} anulował transfer`;
+    const body = `DATA: ${date}, GODZINA: ${time}`;
+    const tag = id;
+    const recipeID = "";
     // await subscribe(`${hotelName} anulował transfer`, `DATA: ${date}, GODZINA: ${time}`, id, isAdmin);
+    await fetch("/api/push", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "notify",
+        type: "recipe",
+        title,
+        body,
+        tag,
+        recipeID,
+      }),
+    });
   };
 
   return (

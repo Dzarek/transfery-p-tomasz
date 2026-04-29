@@ -22,7 +22,8 @@ const registerServiceWorker = async () => {
   return navigator.serviceWorker.register("/sw.js");
 };
 
-export const subscribePush = async () => {
+export const subscribePush = async (userID?: string, isAdmin?: boolean) => {
+  if (!userID || !isAdmin) return;
   const swRegistration = await navigator.serviceWorker.register("/sw.js");
 
   const permission = await Notification.requestPermission();
@@ -43,6 +44,8 @@ export const subscribePush = async () => {
     body: JSON.stringify({
       action: "subscribe",
       subscription,
+      userID,
+      isAdmin,
     }),
   });
 };

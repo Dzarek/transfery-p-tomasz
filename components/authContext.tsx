@@ -23,7 +23,13 @@ const defaultValues: ContextTypes = {
 
 const AppContext = createContext<ContextTypes>(defaultValues);
 
-const AppProvider = ({ children }: { children: React.ReactNode }) => {
+const AppProvider = ({
+  children,
+  isAdmin,
+}: {
+  children: React.ReactNode;
+  isAdmin: boolean;
+}) => {
   const [activeUser, setActiveUser] = useState<any>(null);
   const [name, setName] = useState("");
   const [isLogin, setIsLogin] = useState(false);
@@ -59,12 +65,10 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   // NOTIFICATION
 
   useEffect(() => {
-    if (!activeUser) return;
+    if (!activeUser?.uid) return;
 
-    setTimeout(() => {
-      subscribePush();
-    }, 1000);
-  }, [activeUser]);
+    subscribePush(activeUser.uid, isAdmin);
+  }, [activeUser, isAdmin]);
 
   // END NOTIFICATION
 

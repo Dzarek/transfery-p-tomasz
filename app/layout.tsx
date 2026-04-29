@@ -46,7 +46,7 @@ export default async function RootLayout({
       lang="pl"
       className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} h-full antialiased app`}
     >
-      <AppProvider>
+      <AppProvider isAdmin={isAdmin || false}>
         <AppProvider2 isAdmin={isAdmin || false}>
           <body className="relative">
             <Toaster

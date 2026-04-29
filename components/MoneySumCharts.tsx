@@ -180,7 +180,7 @@ const Wrapper = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   background: white;
   z-index: 9999;
@@ -201,7 +201,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 5vh 0 5vh;
+  padding: 5vh 0 10vh;
 `;
 
 const CloseIcon = styled(MdOutlineClose)`
@@ -330,8 +330,8 @@ const Left = styled.div`
 `;
 
 const ChartWrapper = styled.div`
-  width: 40%;
-  margin-top: 3vh;
+  width: 35%;
+  margin: 5vh auto;
   text-align: center;
 
   h4 {

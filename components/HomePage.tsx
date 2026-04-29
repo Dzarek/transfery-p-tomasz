@@ -12,8 +12,7 @@ import TransfersList from "./TransfersList";
 const bg3 = "/images/img2.jpg";
 
 export default function HomePage() {
-  const { next5transfers, transfers, loading, lastAddedTransfers } =
-    useGlobalContext();
+  const { next5transfers, loading, lastAddedTransfers } = useGlobalContext();
   const [lastAddedList, setLastAddedList] = useState(false);
   const { data: session, status } = useSession();
 
@@ -31,7 +30,6 @@ export default function HomePage() {
       </div>
     );
   }
-  console.log(next5transfers.length);
 
   return (
     <Wrapper className="homepageBg">
@@ -90,7 +88,7 @@ export default function HomePage() {
               )}
             </>
           )}
-          <Link href="/transfers">
+          <Link href="/transfery">
             <button className="allTransfers">zobacz wszystkie transfery</button>
           </Link>
         </div>
@@ -99,12 +97,12 @@ export default function HomePage() {
           <div className="titleContainer">
             <h3>5 najbliższych transferów</h3>
           </div>
-          {transfers.length < 1 && loading ? (
+          {next5transfers.length < 1 && loading ? (
             <Loading />
           ) : (
             <>
-              {transfers.length > 0 ? (
-                <TransfersList transfers={transfers} />
+              {next5transfers.length > 0 ? (
+                <TransfersList transfers={next5transfers} />
               ) : (
                 <p className="noTransfersInfo">
                   <FaInfoCircle /> w najbliższym czasie nie ma żadnych

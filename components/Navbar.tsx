@@ -111,7 +111,7 @@ const Navbar = () => {
     return <h2 className="w-1/2 m-10 text-2xl">Nie jesteś zalogowany</h2>;
   }
   return (
-    <>
+    <div>
       {!showInstruction ? (
         <button
           className="showInstructionBtn"
@@ -122,7 +122,12 @@ const Navbar = () => {
       ) : (
         <Instruction setShowInstruction={setShowInstruction} />
       )}
-      <Wrapper>
+      <Wrapper
+        style={{
+          borderBottom: pathname !== "/reservation" ? "4px solid #b99e81" : "",
+        }}
+        className={pathname !== "/rezerwacja" ? "4px solid #b99e81" : ""}
+      >
         <nav>
           {pathname !== "/" && (
             <Link href="/" className={isAdmin ? "adminNav" : ""}>
@@ -342,7 +347,7 @@ const Navbar = () => {
       {openImportModal && (
         <ImportModal setOpenImportModal={setOpenImportModal} />
       )}
-    </>
+    </div>
   );
 };
 

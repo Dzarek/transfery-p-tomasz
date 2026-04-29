@@ -67,8 +67,6 @@ const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
     return new Date(date).getTime() + h * 3600000 + m * 60000;
   };
 
-  console.log(transfers.length);
-
   return (
     <>
       <Wrapper>
