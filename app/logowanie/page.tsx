@@ -6,6 +6,8 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
 
+const bg = "/images/bg3.jpg";
+
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -76,8 +78,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="w-screen z-50 h-scren fixed inset-0 flex items-center justify-center bg-cover bg-bottom loginBganimate">
-      <Wrapper>
+    <Wrapper>
+      <div className="loginBganimate">
         {forgotPassword ? (
           <div className="container">
             <h2>Resetowanie hasła</h2>
@@ -140,6 +142,7 @@ const LoginPage = () => {
                 width={500}
                 height={500}
                 className="w-1/2"
+                loading="eager"
               />
               <form onSubmit={(e) => handleSubmit(e)}>
                 <input
@@ -164,127 +167,137 @@ const LoginPage = () => {
             </section>
           </div>
         )}
-      </Wrapper>
-    </div>
+      </div>
+    </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.8);
+  background-image: url(${bg});
+  animation: bgMove 15s linear infinite alternate;
+  height: 100vh;
   width: 100vw;
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding: 50px 20px;
+  z-index: 50;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  .container {
-    background-color: #fff;
+  background-size: cover;
+  background-position: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  .loginBganimate {
+    background-color: rgba(0, 0, 0, 0.8);
+    width: 100vw;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 50px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 50px 30px;
-    width: 45vw;
-    min-height: 60vh;
-    border-radius: 20px;
-    color: #111;
-    @media screen and (max-width: 1200px) {
-      width: 100vw;
-      height: 100vh;
-      border-radius: 0px;
-    }
-    section {
-      width: 100%;
+    .container {
+      background-color: #fff;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      img {
-        width: 50%;
+      justify-content: center;
+      padding: 50px 30px;
+      width: 45vw;
+      min-height: 60vh;
+      border-radius: 20px;
+      color: #111;
+      @media screen and (max-width: 1200px) {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0px;
       }
+      section {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        img {
+          width: 50%;
+        }
+        @media screen and (max-width: 800px) {
+          flex-direction: column;
+        }
+      }
+    }
+    .errorInfo {
+      font-size: 1.1rem;
+      text-align: center;
+      color: darkred;
+      font-weight: 500;
+      text-transform: uppercase;
+      width: 80%;
       @media screen and (max-width: 800px) {
-        flex-direction: column;
+        width: 90%;
       }
     }
-  }
-  .errorInfo {
-    font-size: 1.1rem;
-    text-align: center;
-    color: darkred;
-    font-weight: 500;
-    text-transform: uppercase;
-    width: 80%;
-    @media screen and (max-width: 800px) {
-      width: 90%;
+    h2 {
+      text-transform: uppercase;
+      color: var(--secondaryColor);
+      font-size: 2rem;
+      margin-bottom: 7vh;
+      letter-spacing: 2px;
+      text-align: center;
     }
-  }
-  h2 {
-    text-transform: uppercase;
-    color: var(--secondaryColor);
-    font-size: 2rem;
-    margin-bottom: 7vh;
-    letter-spacing: 2px;
-    text-align: center;
-  }
-  form {
-    margin: 3vh auto 5vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 40%;
-    @media screen and (max-width: 800px) {
-      width: 90%;
+    form {
+      margin: 3vh auto 5vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 40%;
+      @media screen and (max-width: 800px) {
+        width: 90%;
+      }
+      input {
+        font-size: 1rem;
+        width: 100%;
+        margin: 1vh auto;
+        padding: 10px 20px;
+        border: 1px solid #111;
+        border-radius: 5px;
+        font-weight: 500;
+        font-family: var(--textFont);
+      }
+      input::placeholder {
+        color: #888;
+      }
     }
-    input {
+    .forgotPasswordLink {
+      color: #888;
+      font-weight: 600;
       font-size: 1rem;
-      width: 100%;
-      margin: 1vh auto;
-      padding: 10px 20px;
-      border: 1px solid #111;
-      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.4s;
+      margin-top: 10px;
+      text-align: right;
+      align-self: flex-end;
+    }
+    .forgotPasswordLink:hover {
+      color: var(--secondaryColor);
+    }
+    button {
+      margin: 6vh auto 0vh;
+      padding: 10px 30px;
+      color: #000;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
       font-weight: 500;
       font-family: var(--textFont);
+      cursor: pointer;
+      transition: 0.4s;
+      background-color: #eee;
     }
-    input::placeholder {
-      color: #888;
+    button:hover {
+      background-color: var(--secondaryColor);
+      color: white;
     }
-  }
-  .forgotPasswordLink {
-    color: #888;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.4s;
-    margin-top: 10px;
-    text-align: right;
-    align-self: flex-end;
-  }
-  .forgotPasswordLink:hover {
-    color: var(--secondaryColor);
-  }
-  button {
-    margin: 6vh auto 0vh;
-    padding: 10px 30px;
-    color: #000;
-    border-radius: 10px;
-    border: none;
-    font-size: 1rem;
-    font-weight: 500;
-    font-family: var(--textFont);
-    cursor: pointer;
-    transition: 0.4s;
-    background-color: #eee;
-  }
-  button:hover {
-    background-color: var(--secondaryColor);
-    color: white;
   }
 `;
 

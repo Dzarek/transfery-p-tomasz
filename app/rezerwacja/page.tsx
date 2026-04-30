@@ -5,8 +5,13 @@ import ReservationPage from "@/components/ReservationPage";
 
 const Home = async () => {
   const session = await getServerSession(authOptions);
+  const allowedUID = process.env.ADMIN_ID;
+  const isAdmin = session && session.uid === allowedUID;
   if (!session || !session.uid) {
     redirect("/logowanie");
+  }
+  if (isAdmin) {
+    redirect("/");
   }
 
   return (

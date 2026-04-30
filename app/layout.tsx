@@ -58,7 +58,7 @@ export default async function RootLayout({
                   zIndex: 999999999999,
                 }}
               />
-              <Navbar />
+              {session && session.uid && <Navbar />}
               {children}
               <Footer />
             </StyledComponentsRegistry>

@@ -178,7 +178,9 @@ const TransfersPage = () => {
           <h3>
             {isAdmin && activeHotel
               ? `Lista Transferów dla ${activeHotel}`
-              : "Lista Transferów"}
+              : !isAdmin && activeHotel
+                ? "Lista Transferów"
+                : ""}
           </h3>
 
           {activeHotel && transfers.length > 0 ? (

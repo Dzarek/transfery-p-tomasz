@@ -108,7 +108,11 @@ const Navbar = () => {
   }
 
   if (status !== "authenticated") {
-    return <h2 className="w-1/2 m-10 text-2xl">Nie jesteś zalogowany</h2>;
+    return (
+      <div className="w-screen h-screen flex justify-center items-center">
+        <h2 className="w-1/2 m-10 text-2xl">Nie jesteś zalogowany</h2>
+      </div>
+    );
   }
   return (
     <div>
@@ -123,10 +127,9 @@ const Navbar = () => {
         <Instruction setShowInstruction={setShowInstruction} />
       )}
       <Wrapper
-        style={{
-          borderBottom: pathname !== "/reservation" ? "4px solid #b99e81" : "",
-        }}
-        className={pathname !== "/rezerwacja" ? "4px solid #b99e81" : ""}
+        className={
+          pathname !== "/rezerwacja" ? "border-b-4 border-[#b99e81]" : ""
+        }
       >
         <nav>
           {pathname !== "/" && (

@@ -184,15 +184,12 @@ html::-webkit-scrollbar-thumb:hover {
 @keyframes bgMove {
   0% {
     background-size: 100%;
+    background-position: center;
   }
   100% {
-    background-size: 110%;
+    background-size: 105%;
+    background-position: 10% 70%;
   }
-}
-
-.loginBganimate {
-  animation: bgMove 15s linear infinite alternate;
-  background-image: url(/images/loginBg.jpg);
 }
 
 @media screen and (max-width: 1200px) {
