@@ -27,11 +27,12 @@ import {
   ImCheckmark,
 } from "react-icons/im";
 
-type Transfer = {
+export type Transfer = {
   id: string;
+  userID: string;
   status: string;
   date: string;
-  time?: string;
+  time: string;
   nameOfGuest: string;
   direction: string;
   people: number;
@@ -44,7 +45,7 @@ type Transfer = {
 };
 
 const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
-  const { setConfirmDelete, setDeleteId, isAdmin, confirmDelete } =
+  const { setConfirmDelete, setSelectedTransfer, isAdmin, confirmDelete } =
     useGlobalContext();
   const [showModal, setShowModal] = useState<string | null>(null);
 
@@ -57,9 +58,14 @@ const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
     Aos.init({ duration: 1000, offset: -100 });
   }, []);
 
-  const handleDeleteShow = (id: string) => {
+  // const handleDeleteShow = (id: string) => {
+  //   setConfirmDelete(true);
+  //   setDeleteId(id);
+  // };
+
+  const handleDeleteShow = (item: Transfer) => {
+    setSelectedTransfer(item);
     setConfirmDelete(true);
-    setDeleteId(id);
   };
 
   const getTimestamp = (date: string, time?: string) => {
@@ -175,7 +181,10 @@ const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
                   {details && (
                     <section>
                       <div>
-                        <MdInfo onClick={() => setShowModal(id)} />
+                        <MdInfo
+                          onClick={() => setShowModal(id)}
+                          className="cursor-pointer"
+                        />
                         <div
                           className={
                             showModal === id
@@ -208,12 +217,12 @@ const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
 
                 {/* ACTIONS */}
                 {isAdmin &&
-                  pathname !== "/" &&
+                  // pathname !== "/" &&
                   !isOld &&
                   status === "pending" && (
                     <button
                       className="deleteBtn"
-                      onClick={() => handleDeleteShow(id)}
+                      onClick={() => handleDeleteShow(item)}
                     >
                       <ImCheckmark style={{ color: "#598c50" }} />
                     </button>
@@ -222,7 +231,7 @@ const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
                 {!isAdmin && status !== "cancel" && !isOld && (
                   <button
                     className="deleteBtn"
-                    onClick={() => handleDeleteShow(id)}
+                    onClick={() => handleDeleteShow(item)}
                   >
                     <IoMdTrash style={{ color: "darkred" }} />
                   </button>
@@ -337,11 +346,11 @@ const Wrapper = styled.ul`
       font-size: 1rem;
       padding: 1.5vh 0vw;
       text-transform: capitalize;
-      svg {
-        color: var(--secondaryColor);
-        margin-right: 10px;
-        font-size: 1.2rem;
-      }
+    }
+    svg {
+      color: var(--secondaryColor);
+      margin-right: 10px;
+      font-size: 1.2rem;
     }
     .status {
       height: 100%;
@@ -400,14 +409,14 @@ const Wrapper = styled.ul`
       font-size: 1.5rem;
       transition: 0.4s;
     }
-    :hover {
+    &:hover {
       svg {
         transform: scale(1.2);
       }
     }
     .iconOK {
       animation: iconOKAnim 1s linear infinite alternate;
-      :hover {
+      &:hover {
         animation: none;
         transform: scale(1.2);
       }

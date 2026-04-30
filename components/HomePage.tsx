@@ -18,11 +18,11 @@ export default function HomePage() {
 
   if (status !== "authenticated") {
     return (
-      <div className="page flex flex-col items-center justify-center">
-        <p className="text-2xl">Odmowa dostępu!</p>
+      <div className="w-screen h-screen flex flex-col items-center justify-center text-black">
+        <h2 className="text-2xl">Odmowa dostępu!</h2>
         <Link
           href="/logowanie"
-          className="mt-5 p-2 rounded-md bg-red-900 text-white"
+          className="mt-5 p-10 rounded-md bg-red-900 text-white"
         >
           {" "}
           zaloguj się

@@ -6,6 +6,7 @@ import { useGlobalContext } from "./context";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import { MdOutlineClose } from "react-icons/md";
+import toast from "react-hot-toast";
 
 type Props = {
   setOpenImportModal: (val: boolean) => void;
@@ -53,7 +54,10 @@ const ImportModal = ({ setOpenImportModal }: Props) => {
     uploadData();
     setOpenImportModal(false);
 
-    alert("Baza danych została uaktualniona!");
+    toast("Baza danych została uaktualniona!", {
+      icon: "✓",
+      style: { borderRadius: "10px", background: "#052810", color: "#fff" },
+    });
   };
 
   useEffect(() => {

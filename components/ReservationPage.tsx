@@ -136,6 +136,7 @@ const ReservationPage = () => {
 
     const newTransfer = {
       id,
+      userID: currentUser!.uid,
       status: "pending",
       date,
       time,
@@ -156,6 +157,7 @@ const ReservationPage = () => {
 
       await postProducts(
         id,
+        currentUser!.uid,
         "pending",
         date,
         time,
@@ -180,7 +182,10 @@ const ReservationPage = () => {
         setSendForm(false);
       }, 1500);
     } catch (err) {
-      toast("Błąd zapisu transferu", { icon: "❌" });
+      toast("Błąd zapisu transferu", {
+        icon: "✖",
+        style: { borderRadius: "10px", background: "#281105", color: "#fff" },
+      });
     } finally {
       setLoading(false);
     }

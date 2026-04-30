@@ -30,6 +30,8 @@ import { sendConfirmationCancel } from "../lib/api";
 import { useRouter } from "next/navigation";
 import { logout } from "@/lib/user.actions";
 import { signOut } from "next-auth/react";
+import { Transfer } from "./TransfersList";
+import toast from "react-hot-toast";
 
 // --- TYPY I INTERFEJSY ---
 
@@ -42,6 +44,7 @@ export interface MoneyData {
 
 export interface TransferData {
   id: string;
+  userID: string;
   status: string;
   date: string; // format YYYY-MM-DD
   time: string; // format HH:mm
@@ -101,6 +104,7 @@ export interface AppContextType {
   setTransfers: React.Dispatch<React.SetStateAction<TransferData[]>>;
   postProducts: (
     id: string,
+    userID: string,
     status: string,
     date: string,
     time: string,
@@ -116,7 +120,8 @@ export interface AppContextType {
     specialTransfer?: boolean,
   ) => Promise<void>;
   setConfirmDelete: React.Dispatch<React.SetStateAction<boolean>>;
-  setDeleteId: React.Dispatch<React.SetStateAction<string | null>>;
+  // setDeleteId: React.Dispatch<React.SetStateAction<string | null>>;
+  setSelectedTransfer: React.Dispatch<React.SetStateAction<Transfer | null>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   handleStatus: () => Promise<void>;
   setActiveHotel: React.Dispatch<React.SetStateAction<any>>;
@@ -173,7 +178,10 @@ export const AppProvider2: React.FC<{
   // const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  // const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [selectedTransfer, setSelectedTransfer] = useState<Transfer | null>(
+    null,
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const [modalName, setModalName] = useState<boolean>(false);
   const [activeHotel, setActiveHotel] = useState<any>(null);
@@ -190,9 +198,6 @@ export const AppProvider2: React.FC<{
     () => transfers.filter((t) => t.status !== "cancel"),
     [transfers],
   );
-  // const isAdmin = currentUser?.uid === process.env.NEXT_PUBLIC_ADMIN_ID;
-
-  // 2. Oddzielny efekt, który TYLKO reaguje na zmianę uprawnień i pobiera dane
 
   // Dla Admina
   const { next5transfers, lastAddedTransfers } = useMemo(() => {
@@ -334,38 +339,6 @@ export const AppProvider2: React.FC<{
     handleLogout();
   };
 
-  // const login = async (email: string, password: string) => {
-  //   await logout();
-  //   await signInWithEmailAndPassword(auth, email, password);
-  //   if (authInstance.currentUser) {
-  //     const getData = doc(db, `usersList/${authInstance.currentUser.uid}`);
-  //     const data2 = await getDoc(getData);
-  //     const item = data2.data();
-  //     if (item && item.activeAccount === false) {
-  //       await logout();
-  //       alert("Konto zostało usunięte!");
-  //     }
-  //     if (authInstance.currentUser.displayName === null) {
-  //       setModalName(true);
-  //     }
-  //   }
-  //   router.push("/");
-  // };
-
-  // const logout = async () => {
-  //   setLoading(true);
-  //   await signOut(auth);
-  //   setName("");
-  //   setUserID("0");
-  //   // setIsAdmin(false);
-  //   setActiveHotel(false);
-  //   setTransfers([]);
-  //   setAllUsersList([]);
-  //   setAllUsersTransfers([]);
-  //   setCurrentUser(null);
-  //   router.push("/login");
-  // };
-
   const getAllUsers = async () => {
     const allUsersCollectionRef = collection(db, "usersList");
     const data = await getDocs(allUsersCollectionRef);
@@ -452,18 +425,49 @@ export const AppProvider2: React.FC<{
 
   const updateName = async (newName: string) => {
     if (!authInstance.currentUser) return;
-    await updateProfile(authInstance.currentUser, { displayName: newName });
-    setName(newName);
-    const userRef = doc(db, "usersList", authInstance.currentUser.uid);
-    await setDoc(userRef, { userName: newName }, { merge: true });
+
+    try {
+      await updateProfile(authInstance.currentUser, {
+        displayName: newName,
+      });
+
+      setName(newName);
+
+      const userRef = doc(db, "usersList", authInstance.currentUser.uid);
+      await setDoc(userRef, { userName: newName }, { merge: true });
+
+      toast("Nazwa użytkownika zmieniona", {
+        icon: "✓",
+        style: { borderRadius: "10px", background: "#052810", color: "#fff" },
+      });
+    } catch (error) {
+      console.error(error);
+      toast("Błąd podczas zmiany nazwy", {
+        icon: "✖",
+        style: { borderRadius: "10px", background: "#281105", color: "#fff" },
+      });
+    }
   };
 
   const changePassword = async () => {
-    if (authInstance.currentUser?.email) {
+    if (!authInstance.currentUser?.email) return;
+
+    try {
       await sendPasswordResetEmail(
         authInstance,
         authInstance.currentUser.email,
-      ).catch(console.error);
+      );
+
+      toast("Wysłano email do zmiany hasła", {
+        icon: "✓",
+        style: { borderRadius: "10px", background: "#052810", color: "#fff" },
+      });
+    } catch (error) {
+      console.error(error);
+      toast("Nie udało się wysłać emaila", {
+        icon: "✖",
+        style: { borderRadius: "10px", background: "#281105", color: "#fff" },
+      });
     }
   };
 
@@ -473,7 +477,19 @@ export const AppProvider2: React.FC<{
 
   const disableUser = async () => {
     const userRef = doc(db, "usersList", userID);
-    await setDoc(userRef, { activeAccount: false }, { merge: true });
+    try {
+      await setDoc(userRef, { activeAccount: false }, { merge: true });
+      toast("Użytkownik zablokowany", {
+        icon: "✓",
+        style: { borderRadius: "10px", background: "#052810", color: "#fff" },
+      });
+    } catch (error) {
+      console.error(error);
+      toast("Nie udało się zablokować użytkownika", {
+        icon: "✖",
+        style: { borderRadius: "10px", background: "#281105", color: "#fff" },
+      });
+    }
   };
 
   // --- FETCH DATA ---
@@ -557,7 +573,19 @@ export const AppProvider2: React.FC<{
   const updateHotelPrice = () => {
     if (isAdmin) {
       const userRef = doc(db, "usersList", userID);
-      setDoc(userRef, { money: moneyData }, { merge: true });
+      try {
+        setDoc(userRef, { money: moneyData }, { merge: true });
+        toast("Zmieniono stawki", {
+          icon: "✓",
+          style: { borderRadius: "10px", background: "#052810", color: "#fff" },
+        });
+      } catch (error) {
+        console.error(error);
+        toast("Nie udało się zmienić stawek", {
+          icon: "✖",
+          style: { borderRadius: "10px", background: "#281105", color: "#fff" },
+        });
+      }
     }
   };
 
@@ -565,6 +593,7 @@ export const AppProvider2: React.FC<{
 
   const postProducts = async (
     id: string,
+    userID: string,
     status: string,
     date: string,
     time: string,
@@ -582,6 +611,7 @@ export const AppProvider2: React.FC<{
     const ref = doc(collection(db, `usersList/${userID}/transfers`));
     await setDoc(ref, {
       id,
+      userID,
       status,
       date,
       time,
@@ -599,27 +629,62 @@ export const AppProvider2: React.FC<{
   };
 
   const handleStatus = async () => {
-    if (confirmDelete && deleteId) {
-      const deletedItem = transfers.find((item) => item.id === deleteId);
-      if (!deletedItem) return;
+    if (!confirmDelete || !selectedTransfer) return;
 
-      let newStatus = deletedItem.status;
-      let newPrice = deletedItem.price;
-      let newProvision = deletedItem.provision;
+    const deletedItem = selectedTransfer;
+
+    let newStatus = deletedItem.status;
+    let newPrice = deletedItem.price;
+    let newProvision = deletedItem.provision;
+
+    if (!isAdmin) {
+      newStatus = "cancel";
+      newPrice = 0;
+      newProvision = 0;
+    } else {
+      newStatus = "ok";
+    }
+
+    try {
+      await putEdit(
+        deletedItem.id,
+        deletedItem.userID,
+        newStatus,
+        newPrice,
+        newProvision,
+        moment().valueOf(),
+      );
+
+      // ✅ DOPIERO PO SUKCESIE
 
       if (isAdmin) {
-        newStatus = "ok";
+        toast("Potwierdzono transfer", {
+          icon: "✓",
+          style: {
+            borderRadius: "10px",
+            background: "#052810",
+            color: "#fff",
+          },
+        });
       } else {
-        newStatus = "cancel";
-        newPrice = 0;
-        newProvision = 0;
+        toast("Anulowano transfer", {
+          icon: "✖",
+          style: {
+            borderRadius: "10px",
+            background: "#281105",
+            color: "#fff",
+          },
+        });
+
         const convertDate = moment(deletedItem.date).format("L");
-        sendConfirmationCancel({
+
+        await sendConfirmationCancel({
           name,
           convertDate,
           dataNameOfGuest: deletedItem.nameOfGuest,
         });
-        handleSub(
+
+        await handleSub(
           name || "",
           deletedItem.date,
           deletedItem.time,
@@ -627,65 +692,106 @@ export const AppProvider2: React.FC<{
         );
       }
 
-      await putEdit(
-        deleteId,
-        newStatus,
-        newPrice,
-        newProvision,
-        moment().valueOf(),
-      );
       setConfirmDelete(false);
-      setDeleteId(null);
+      setSelectedTransfer(null);
+    } catch (error) {
+      console.error(error);
+
+      toast("Błąd! Nie udało się zapisać zmian.", {
+        icon: "❗",
+        style: {
+          borderRadius: "10px",
+          background: "#330000",
+          color: "#fff",
+        },
+      });
     }
   };
 
   const putEdit = async (
     editID: string,
+    editUserID: string,
     status: string,
     price: number,
     provision: number,
     createdDate: number,
   ) => {
-    const productDoc = doc(db, `usersList/${userID}/transfers`, editID);
+    const productDoc = doc(db, `usersList/${editUserID}/transfers`, editID);
     await updateDoc(productDoc, { status, price, provision, createdDate });
   };
 
   // --- EXPORT / IMPORT EXCEL ---
 
   const exportData = () => {
-    if (isAdmin && downloadData) {
+    if (!isAdmin || !downloadData) return;
+
+    try {
       const wb = XLSX.utils.book_new();
+
       downloadData.forEach((item) => {
         const { name, itemsArray } = item;
-        if (itemsArray.length > 0) {
-          const sorted = [...itemsArray].sort((a, b) => {
-            const msA =
-              Number(a.time.split(":")[0]) * 3600000 +
-              Number(a.time.split(":")[1]) * 60000;
-            const msB =
-              Number(b.time.split(":")[0]) * 3600000 +
-              Number(b.time.split(":")[1]) * 60000;
-            return (
-              new Date(a.date).getTime() +
-              msA -
-              (new Date(b.date).getTime() + msB)
-            );
-          });
 
-          const sheet1 = XLSX.utils.book_append_sheet(
-            wb,
-            XLSX.utils.json_to_sheet(sorted),
-            name,
+        if (!itemsArray?.length) return;
+
+        const sorted = [...itemsArray].sort((a, b) => {
+          const getMs = (t?: string) => {
+            if (!t) return 0;
+            const [h = 0, m = 0] = t.split(":").map(Number);
+            return h * 3600000 + m * 60000;
+          };
+
+          return (
+            new Date(a.date).getTime() +
+            getMs(a.time) -
+            (new Date(b.date).getTime() + getMs(b.time))
           );
-        }
+        });
+
+        // 🔥 sanitizacja nazwy arkusza
+        const safeName = name.replace(/[\\/?*\[\]]/g, "").slice(0, 31);
+
+        XLSX.utils.book_append_sheet(
+          wb,
+          XLSX.utils.json_to_sheet(sorted),
+          safeName,
+        );
       });
+
       XLSX.writeFile(wb, "Transfery.xlsx");
 
-      const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(downloadData))}`;
+      // 🔥 JSON backup
+      const blob = new Blob([JSON.stringify(downloadData)], {
+        type: "application/json",
+      });
+
+      const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = jsonString;
+
+      link.href = url;
       link.download = "TransferyBackUp.json";
       link.click();
+
+      URL.revokeObjectURL(url); // 🔥 cleanup
+
+      toast("Pobrano kopię zapasową", {
+        icon: "✓",
+        style: {
+          borderRadius: "10px",
+          background: "#052810",
+          color: "#fff",
+        },
+      });
+    } catch (err) {
+      console.error(err);
+
+      toast("Błąd eksportu danych!", {
+        icon: "❗",
+        style: {
+          borderRadius: "10px",
+          background: "#330000",
+          color: "#fff",
+        },
+      });
     }
   };
 
@@ -702,17 +808,22 @@ export const AppProvider2: React.FC<{
 
   const uploadData = async () => {
     if (!file) return;
-    file.forEach(async (el) => {
+
+    for (const el of file) {
       const userRef = doc(db, "usersList", el.id);
+
       await setDoc(userRef, {
         activeAccount: true,
         userName: el.name,
         money: el.money,
       });
-      el.itemsArray.forEach(async (item) => {
+
+      for (const item of el.itemsArray) {
         const backupRef = doc(collection(db, `usersList/${el.id}/transfers`));
+
         await setDoc(backupRef, {
           id: item.id,
+          userID: el.id,
           status: item.status,
           date: item.date,
           time: item.time,
@@ -724,10 +835,13 @@ export const AppProvider2: React.FC<{
           phone: item.phone,
           price: item.price,
           provision: item.provision,
+          createdDate: item.createdDate || Date.now(),
+          specialTransfer: item.specialTransfer || false,
         });
-      });
-    });
-    getAllUsers();
+      }
+    }
+
+    await getAllUsers();
   };
 
   // --- NOTIFICATIONS ---
@@ -788,7 +902,8 @@ export const AppProvider2: React.FC<{
         setTransfers,
         postProducts,
         setConfirmDelete,
-        setDeleteId,
+        // setDeleteId,
+        setSelectedTransfer,
         setLoading,
         handleStatus,
         setActiveHotel,

@@ -53,6 +53,7 @@ export default async function RootLayout({
               position="top-center"
               containerStyle={{
                 top: 100,
+                zIndex: 999999999999,
               }}
             />
             <Navbar />
