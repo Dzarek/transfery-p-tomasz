@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+import StyledComponentsRegistry from "@/components/StyledComponentsRegistry";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,16 +50,18 @@ export default async function RootLayout({
       <AppProvider isAdmin={isAdmin || false}>
         <AppProvider2 isAdmin={isAdmin || false}>
           <body className="relative">
-            <Toaster
-              position="top-center"
-              containerStyle={{
-                top: 100,
-                zIndex: 999999999999,
-              }}
-            />
-            <Navbar />
-            {children}
-            <Footer />
+            <StyledComponentsRegistry>
+              <Toaster
+                position="top-center"
+                containerStyle={{
+                  top: 100,
+                  zIndex: 999999999999,
+                }}
+              />
+              <Navbar />
+              {children}
+              <Footer />
+            </StyledComponentsRegistry>
           </body>
         </AppProvider2>
       </AppProvider>
