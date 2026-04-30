@@ -10,6 +10,9 @@ import { useSession } from "next-auth/react";
 import TransfersList from "./TransfersList";
 
 const bg3 = "/images/img2.jpg";
+const bgM = "/images/bgM.jpg";
+
+const homeVideo = "/images/homeVideo2.mp4";
 
 export default function HomePage() {
   const { next5transfers, loading, lastAddedTransfers } = useGlobalContext();
@@ -33,6 +36,17 @@ export default function HomePage() {
 
   return (
     <Wrapper className="homepageBg">
+      {/* Background video */}
+      <video
+        src={homeVideo}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="none"
+        className="w-full h-full object-cover object-[40%_0%] absolute inset-0"
+      />
+
       {session.isAdmin ? (
         <div className="containerAdmin">
           <div className="titleContainer">
@@ -138,6 +152,8 @@ const Wrapper = styled.div`
     padding-top: 30vh;
     padding-top: 30dvh;
     min-height: 74dvh;
+    /* background-position: 48% center; */
+    /* background-image: url(${bgM}); */
   }
   .notiBtn {
     position: fixed;
@@ -156,7 +172,7 @@ const Wrapper = styled.div`
     min-height: 74vh;
     width: 100%;
     padding: 10vh 3vw 3vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     .titleContainer {
       width: 90%;
       display: flex;
@@ -254,7 +270,7 @@ const Wrapper = styled.div`
     min-height: 74vh;
     width: 100%;
     padding: 10vh 3vw 3vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     .titleContainer {
       width: 90%;
       display: flex;
