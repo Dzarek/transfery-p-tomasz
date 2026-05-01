@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
-import { AppProvider } from "@/components/authContext";
-import { AppProvider2 } from "@/components/context";
+import { AppProvider } from "@/components/context";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
@@ -48,22 +47,20 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} h-full antialiased app`}
     >
       <AppProvider isAdmin={isAdmin || false}>
-        <AppProvider2 isAdmin={isAdmin || false}>
-          <body className="relative">
-            <StyledComponentsRegistry>
-              <Toaster
-                position="top-center"
-                containerStyle={{
-                  top: 100,
-                  zIndex: 999999999999,
-                }}
-              />
-              {session && session.uid && <Navbar />}
-              {children}
-              <Footer />
-            </StyledComponentsRegistry>
-          </body>
-        </AppProvider2>
+        <body className="relative">
+          <StyledComponentsRegistry>
+            <Toaster
+              position="top-center"
+              containerStyle={{
+                top: 100,
+                zIndex: 999999999999,
+              }}
+            />
+            {session && session.uid && <Navbar />}
+            {children}
+            <Footer />
+          </StyledComponentsRegistry>
+        </body>
       </AppProvider>
     </html>
   );

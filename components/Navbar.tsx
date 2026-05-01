@@ -1,8 +1,6 @@
 "use client";
-import { logout } from "@/lib/user.actions";
 import toast from "react-hot-toast";
 import { signOut } from "next-auth/react";
-import { useGlobalContext as useGlobalContextAuth } from "./authContext";
 import { useSession } from "next-auth/react";
 import styled from "styled-components";
 import { useGlobalContext } from "./context";
@@ -32,7 +30,6 @@ import Instruction from "../instruction/Instruction";
 import FirstLoading from "./FirstLoading";
 
 const Navbar = () => {
-  const { setIsLogin } = useGlobalContextAuth();
   const { status } = useSession();
   const {
     currentMonthYear,
@@ -50,6 +47,7 @@ const Navbar = () => {
     prevMonthAdminEarnAll,
     prevMonthProvisionAll,
     exportData,
+    logout,
   } = useGlobalContext();
   const [openSettings, setOpenSettings] = useState(false);
   const [openMoneyCharts, setOpenMoneyCharts] = useState(false);
@@ -92,7 +90,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     await logout();
     await signOut({ callbackUrl: "/logowanie" });
-    setIsLogin(false);
+    // setIsLogin(false);
     toast("Poprawnie wylogowano", {
       icon: "👋",
       style: {

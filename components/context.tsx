@@ -24,11 +24,17 @@ import {
 } from "firebase/auth";
 import * as XLSX from "xlsx";
 import { sendConfirmationCancel } from "../lib/api";
-import { logout } from "@/lib/user.actions";
 import { signOut } from "next-auth/react";
 import { Transfer } from "./TransfersList";
 import toast from "react-hot-toast";
+import { subscribePush } from "@/notification/Notification";
+import { SessionProvider } from "next-auth/react";
 
+import {
+  signInWithEmailAndPassword,
+  signOut as signOurFirebase,
+} from "firebase/auth";
+import { unsubscribePush } from "@/notification/Notification";
 // --- TYPY I INTERFEJSY ---
 
 export interface MoneyData {
@@ -139,11 +145,13 @@ export interface AppContextType {
   uploadData: () => Promise<void>;
   setFile: React.Dispatch<React.SetStateAction<BackupData[] | null>>;
   deleteData: () => Promise<void>;
+  login: (email: string, password: string) => Promise<string>;
+  logout: () => Promise<void>;
 }
 
 // --- INICJALIZACJA KONTEKSTU ---
 
-const AppContext2 = React.createContext<AppContextType | undefined>(undefined);
+const AppContext = React.createContext<AppContextType | undefined>(undefined);
 
 moment.locale("pl");
 const currentMonthYear = moment().format("MMMM YYYY");
@@ -154,7 +162,7 @@ const money: MoneyData[] = [
   { minPeople: 4, maxPeople: 8, price: 160, provision: 50, nightProvision: 20 },
 ];
 
-export const AppProvider2: React.FC<{
+export const AppProvider: React.FC<{
   children: React.ReactNode;
   isAdmin: boolean;
 }> = ({ children, isAdmin }) => {
@@ -185,6 +193,37 @@ export const AppProvider2: React.FC<{
     () => transfers.filter((t) => t.status !== "cancel"),
     [transfers],
   );
+
+  const login = async (email: string, password: string) => {
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+    const getData = doc(db, `usersList/${userCred.user.uid}`);
+    const data2 = await getDoc(getData);
+    if (data2.data()) {
+      const item = data2.data();
+      if (item!.activeAccount === false) {
+        await logout();
+        toast("Konto zostało usunięte!", {
+          icon: "✖",
+          style: {
+            borderRadius: "10px",
+            background: "#280505",
+            color: "#fff",
+          },
+        });
+        throw new Error("ACCOUNT_DISABLED");
+      }
+    }
+    return await userCred.user.getIdToken();
+  };
+
+  const logout = async () => {
+    try {
+      await unsubscribePush();
+      await signOurFirebase(auth);
+    } catch (error) {
+      console.error("Błąd podczas wylogowywania", error);
+    }
+  };
 
   // Dla Admina
   const { next5transfers, lastAddedTransfers } = useMemo(() => {
@@ -305,11 +344,6 @@ export const AppProvider2: React.FC<{
 
   // --- AUTH METHODS ---
 
-  const handleLogout = async () => {
-    await logout();
-    await signOut({ callbackUrl: "/logowanie" });
-  };
-
   const createNewUser = async (
     email: string,
     password: string,
@@ -323,7 +357,8 @@ export const AppProvider2: React.FC<{
       { userName: newName, activeAccount: true, money: money },
       { merge: true },
     );
-    handleLogout();
+    await logout();
+    await signOut({ callbackUrl: "/logowanie" });
   };
 
   const getAllUsers = async () => {
@@ -399,6 +434,16 @@ export const AppProvider2: React.FC<{
 
     return () => unsubscribe();
   }, [isAdmin]);
+
+  // NOTIFICATION
+
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+
+    subscribePush(currentUser.uid, isAdmin);
+  }, [currentUser, isAdmin]);
+
+  // END NOTIFICATION
 
   // --- USER METHODS ---
 
@@ -854,66 +899,70 @@ export const AppProvider2: React.FC<{
   };
 
   return (
-    <AppContext2.Provider
-      value={{
-        isAdmin,
-        allUsersList,
-        next5transfers,
-        transfers,
-        name,
-        currentUser,
-        confirmDelete,
-        currentMonthYear,
-        prevMonthYear,
-        modalName,
-        activeHotel,
-        loading,
-        moneyData,
-        monthProvision,
-        monthAdminEarn,
-        monthAdminEarnAll,
-        monthProvisionAll,
-        prevMonthProvision,
-        prevMonthAdminEarn,
-        prevMonthAdminEarnAll,
-        prevMonthProvisionAll,
-        file,
-        lastAddedTransfers,
-        setMoneyData,
-        setTransfers,
-        postProducts,
-        setConfirmDelete,
-        setSelectedTransfer,
-        setLoading,
-        handleStatus,
-        setActiveHotel,
-        setName,
-        setUserID,
-        updateUser,
-        updateName,
-        changePassword,
-        changePasswordWhenLogin,
-        updateHotelPrice,
-        createNewUser,
-        disableUser,
-        getAllUsers,
-        exportData,
-        uploadData,
-        setFile,
-        deleteData,
-      }}
-    >
-      {children}
-    </AppContext2.Provider>
+    <SessionProvider>
+      <AppContext.Provider
+        value={{
+          isAdmin,
+          allUsersList,
+          next5transfers,
+          transfers,
+          name,
+          currentUser,
+          confirmDelete,
+          currentMonthYear,
+          prevMonthYear,
+          modalName,
+          activeHotel,
+          loading,
+          moneyData,
+          monthProvision,
+          monthAdminEarn,
+          monthAdminEarnAll,
+          monthProvisionAll,
+          prevMonthProvision,
+          prevMonthAdminEarn,
+          prevMonthAdminEarnAll,
+          prevMonthProvisionAll,
+          file,
+          lastAddedTransfers,
+          setMoneyData,
+          setTransfers,
+          postProducts,
+          setConfirmDelete,
+          setSelectedTransfer,
+          setLoading,
+          handleStatus,
+          setActiveHotel,
+          setName,
+          setUserID,
+          updateUser,
+          updateName,
+          changePassword,
+          changePasswordWhenLogin,
+          updateHotelPrice,
+          createNewUser,
+          disableUser,
+          getAllUsers,
+          exportData,
+          uploadData,
+          setFile,
+          deleteData,
+          login,
+          logout,
+        }}
+      >
+        {children}
+      </AppContext.Provider>
+    </SessionProvider>
   );
 };
 
 export const useGlobalContext = () => {
-  const context = useContext(AppContext2);
+  const context = useContext(AppContext);
   if (context === undefined) {
     throw new Error("useGlobalContext must be used within an AppProvider");
   }
   return context;
 };
 
-export { AppContext2 };
+export { AppContext };

@@ -3,22 +3,23 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: NextRequest) {
-  const token = await getToken({ req });
-
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
   const { pathname } = req.nextUrl;
 
-  // 🔓 PUBLIC routes (dostępne bez logowania)
-  const publicRoutes = ["/logowanie"];
+  // 🔓 PUBLIC
+  const isPublicRoute = pathname.startsWith("/logowanie");
 
-  if (publicRoutes.includes(pathname)) {
-    // jeśli zalogowany → nie wpuszczaj na login
+  if (isPublicRoute) {
     if (token) {
       return NextResponse.redirect(new URL("/", req.url));
     }
     return NextResponse.next();
   }
 
-  // 🔒 jeśli NIE zalogowany → redirect do login
+  // 🔒 PROTECTED
   if (!token) {
     return NextResponse.redirect(new URL("/logowanie", req.url));
   }
@@ -26,10 +27,4 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = {
-  matcher: [
-    "/", // homepage
-    "/transfery", // lista transferów
-    "/rezerwacja", // dodawanie transferu
-  ],
-};
+export const config = { matcher: ["/", "/transfery", "/rezerwacja"] };

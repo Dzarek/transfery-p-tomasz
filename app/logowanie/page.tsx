@@ -1,10 +1,10 @@
 "use client";
 import styled from "styled-components";
-import { changePasswordWhenLogin, login } from "@/lib/user.actions";
 import Image from "next/image";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
+import { useGlobalContext } from "@/components/context";
 
 const bg = "/images/tBg.jpg";
 
@@ -13,6 +13,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [forgotPassword, setForgotPassword] = useState(false);
   const [newPasswordSend, setNewPasswordSend] = useState(false);
+  const { changePasswordWhenLogin, login } = useGlobalContext();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
