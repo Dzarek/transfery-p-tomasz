@@ -242,11 +242,14 @@ const TransfersPage = () => {
               </h3>
               {moneyData.map((item, index) => {
                 return (
-                  <>
+                  <div
+                    key={index}
+                    className="flex flex-col items-center justify-center"
+                  >
                     <p>
                       {item.minPeople}-{item.maxPeople} osoby:
                     </p>
-                    <article key={index}>
+                    <article>
                       <div className="inputContainer">
                         <label htmlFor="moneyPrice">cena:</label>
                         <input
@@ -259,7 +262,6 @@ const TransfersPage = () => {
                           }
                         />
                       </div>
-                      {/* <p>PLN</p> */}
                       <div className="inputContainer">
                         <label htmlFor="moneyProvision">prowizja:</label>
                         <input
@@ -272,7 +274,6 @@ const TransfersPage = () => {
                           }
                         />
                       </div>
-                      {/* <p>PLN</p> */}
                       <div className="inputContainer">
                         <label htmlFor="moneyProvision">prowizja noc:</label>
                         <input
@@ -288,9 +289,8 @@ const TransfersPage = () => {
                           }
                         />
                       </div>
-                      {/* <p>PLN</p> */}
                     </article>
-                  </>
+                  </div>
                 );
               })}
               <button onClick={handleSaveMoney}>zapisz zmiany</button>
@@ -632,6 +632,9 @@ const Wrapper = styled.div`
         font-weight: 500;
         font-size: 1.1rem;
         color: var(--secondaryColor);
+        @media screen and (max-width: 1200px) {
+          margin-top: 2vh;
+        }
       }
       input {
         font-size: 1.1rem;
@@ -641,6 +644,9 @@ const Wrapper = styled.div`
         font-weight: 600;
         background-color: white;
         color: #222;
+        @media screen and (max-width: 1200px) {
+          margin-bottom: 1vh;
+        }
       }
     }
     h3 {
