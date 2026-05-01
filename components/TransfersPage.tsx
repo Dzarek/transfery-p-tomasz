@@ -657,12 +657,7 @@ const Wrapper = styled.div`
         color: var(--secondaryColor);
       }
     }
-    /* h4 {
-      font-size: 1.4rem;
-      color: var(--secondaryColor);
-      margin-bottom: 1vh;
-      text-align: center;
-    } */
+
     button {
       background-color: white;
       color: #111;

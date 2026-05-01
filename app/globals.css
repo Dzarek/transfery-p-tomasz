@@ -176,7 +176,6 @@ html::-webkit-scrollbar-thumb:hover {
     top: 2%;
     left: 4%;
     transform: translateX(0);
-    /* border-radius: 0 0 5px 0; */
   }
 }
 
@@ -196,7 +195,3 @@ html::-webkit-scrollbar-thumb:hover {
     animation: none;
   }
 }
-
-/* .homepageBg {
-  background-image: url(/images/img2.jpg);
-} */

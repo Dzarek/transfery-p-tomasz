@@ -7,7 +7,6 @@ import moment from "moment/min/moment-with-locales";
 import { v4 as uuidv4 } from "uuid";
 import { IoAddCircle, IoCheckmark } from "react-icons/io5";
 import { FaLock, FaLockOpen } from "react-icons/fa";
-// import { sendConfirmation } from "@/lib/api";
 import { GiCarWheel } from "react-icons/gi";
 import toast from "react-hot-toast";
 import { sendConfirmation } from "@/lib/api";

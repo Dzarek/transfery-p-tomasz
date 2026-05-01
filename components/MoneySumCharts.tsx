@@ -93,10 +93,6 @@ const MoneySumCharts = ({ setOpenMoneyCharts }: Props) => {
     [allUsersList],
   );
 
-  const handleChangeMonth = () => {
-    setActiveMonth((prev) => !prev);
-  };
-
   const handleActiveHotel = (value: string) => {
     setUserSelect(value);
 
