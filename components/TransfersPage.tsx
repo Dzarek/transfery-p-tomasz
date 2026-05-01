@@ -116,6 +116,13 @@ const TransfersPage = () => {
       ),
     );
   };
+  const handleChangeProvisionN = (value: number, index: number) => {
+    setMoneyData((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, nightProvision: value } : item,
+      ),
+    );
+  };
 
   const handleSaveMoney = () => {
     updateHotelPrice();
@@ -230,41 +237,60 @@ const TransfersPage = () => {
                 className="closeIcon"
                 onClick={() => setMoneyModal(null)}
               />
-              <h3>{moneyModal.userName}</h3>
-              <h4>CENNIK</h4>
+              <h3>
+                {moneyModal.userName} - <span>CENNIK (PLN)</span>
+              </h3>
               {moneyData.map((item, index) => {
                 return (
-                  <article key={index}>
+                  <>
                     <p>
                       {item.minPeople}-{item.maxPeople} osoby:
                     </p>
-                    <div className="inputContainer">
-                      <label htmlFor="moneyPrice">cena:</label>
-                      <input
-                        id="moneyPrice"
-                        className="moneyPrice"
-                        type="number"
-                        value={item.price}
-                        onChange={(e) =>
-                          handleChangePrice(Number(e.target.value), index)
-                        }
-                      />
-                    </div>
-                    <p>PLN</p>
-                    <div className="inputContainer">
-                      <label htmlFor="moneyProvision">prowizja:</label>
-                      <input
-                        id="moneyProvision"
-                        className="moneyProvision"
-                        type="number"
-                        value={item.provision}
-                        onChange={(e) =>
-                          handleChangeProvision(Number(e.target.value), index)
-                        }
-                      />
-                    </div>
-                    <p>PLN</p>
-                  </article>
+                    <article key={index}>
+                      <div className="inputContainer">
+                        <label htmlFor="moneyPrice">cena:</label>
+                        <input
+                          id="moneyPrice"
+                          className="moneyPrice"
+                          type="number"
+                          value={item.price}
+                          onChange={(e) =>
+                            handleChangePrice(Number(e.target.value), index)
+                          }
+                        />
+                      </div>
+                      {/* <p>PLN</p> */}
+                      <div className="inputContainer">
+                        <label htmlFor="moneyProvision">prowizja:</label>
+                        <input
+                          id="moneyProvision"
+                          className="moneyProvision"
+                          type="number"
+                          value={item.provision}
+                          onChange={(e) =>
+                            handleChangeProvision(Number(e.target.value), index)
+                          }
+                        />
+                      </div>
+                      {/* <p>PLN</p> */}
+                      <div className="inputContainer">
+                        <label htmlFor="moneyProvision">prowizja noc:</label>
+                        <input
+                          id="moneyProvisionN"
+                          className="moneyProvision"
+                          type="number"
+                          value={item.nightProvision}
+                          onChange={(e) =>
+                            handleChangeProvisionN(
+                              Number(e.target.value),
+                              index,
+                            )
+                          }
+                        />
+                      </div>
+                      {/* <p>PLN</p> */}
+                    </article>
+                  </>
                 );
               })}
               <button onClick={handleSaveMoney}>zapisz zmiany</button>
@@ -568,6 +594,15 @@ const Wrapper = styled.div`
         top: 2%;
       }
     }
+    p {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-top: 20px;
+      @media screen and (max-width: 1200px) {
+        text-align: center;
+        font-size: 1rem;
+      }
+    }
     article {
       display: flex;
       flex-direction: row;
@@ -579,23 +614,7 @@ const Wrapper = styled.div`
         width: 95%;
         flex-direction: column;
       }
-      p {
-        margin-right: 10px;
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-top: 30px;
-        @media screen and (max-width: 1200px) {
-          text-align: center;
-          font-size: 1rem;
-          margin-right: 10px;
-          :nth-of-type(2) {
-            display: none;
-          }
-          :nth-of-type(3) {
-            display: none;
-          }
-        }
-      }
+
       .inputContainer {
         display: flex;
         flex-direction: column;
@@ -615,10 +634,10 @@ const Wrapper = styled.div`
         color: var(--secondaryColor);
       }
       input {
-        font-size: 1.2rem;
-        padding: 10px 10px;
+        font-size: 1.1rem;
+        padding: 5px 5px;
         text-align: center;
-        width: 100%;
+        width: 80%;
         font-weight: 600;
         background-color: white;
         color: #222;
@@ -626,19 +645,24 @@ const Wrapper = styled.div`
     }
     h3 {
       text-transform: uppercase;
-      font-size: 2.5rem;
+      font-size: 1.6rem;
       font-weight: 600;
-      margin-bottom: 3vh;
+      margin-bottom: 4vh;
+      text-align: center;
       @media screen and (max-width: 1200px) {
         margin-top: 10vh;
+        font-size: 1.2rem;
+      }
+      span {
+        color: var(--secondaryColor);
       }
     }
-    h4 {
+    /* h4 {
       font-size: 1.4rem;
       color: var(--secondaryColor);
-      margin-bottom: 3vh;
+      margin-bottom: 1vh;
       text-align: center;
-    }
+    } */
     button {
       background-color: white;
       color: #111;
