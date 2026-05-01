@@ -173,11 +173,10 @@ html::-webkit-scrollbar-thumb:hover {
 
 @media screen and (max-width: 900px) {
   .showInstructionBtn {
-    top: 30vh;
-    top: 30dvh;
-    left: 0%;
+    top: 2%;
+    left: 4%;
     transform: translateX(0);
-    border-radius: 0 0 5px 0;
+    /* border-radius: 0 0 5px 0; */
   }
 }
 

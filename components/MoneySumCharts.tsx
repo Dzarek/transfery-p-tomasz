@@ -221,10 +221,11 @@ const CloseIcon = styled(MdOutlineClose)`
 const Title = styled.h3`
   text-transform: uppercase;
   color: var(--secondaryColor);
-  font-size: 1.8rem;
-  margin-bottom: 8vh;
-  margin-top: 5vh;
+  font-size: 1.6rem;
   letter-spacing: 2px;
+  text-align: center;
+  width: 90%;
+  margin: 5vh auto 8vh;
 `;
 
 const MonthBtn = styled.button`

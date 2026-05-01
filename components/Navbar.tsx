@@ -116,16 +116,6 @@ const Navbar = () => {
   }
   return (
     <div>
-      {!showInstruction ? (
-        <button
-          className="showInstructionBtn"
-          onClick={() => setShowInstruction(true)}
-        >
-          Instrukcja
-        </button>
-      ) : (
-        <Instruction setShowInstruction={setShowInstruction} />
-      )}
       <Wrapper
         className={
           pathname !== "/rezerwacja" ? "border-b-4 border-[#b99e81]" : ""
@@ -294,6 +284,16 @@ const Navbar = () => {
           <button onClick={() => setOpenSettings(false)} className="closeBtn">
             <MdOutlineClose />
           </button>
+          {!showInstruction ? (
+            <button
+              className="showInstructionBtn"
+              onClick={() => setShowInstruction(true)}
+            >
+              Instrukcja
+            </button>
+          ) : (
+            <Instruction setShowInstruction={setShowInstruction} />
+          )}
           {isAdmin ? (
             <section className="dataManage">
               <h3>kopia zapasowa</h3>
@@ -941,10 +941,10 @@ const Wrapper3 = styled.div`
       @media screen and (max-width: 900px) {
         margin: 0;
         width: 50%;
-        :nth-of-type(1) {
+        &:nth-of-type(1) {
           border-right: 1px solid #444;
         }
-        :nth-of-type(2) {
+        &:nth-of-type(2) {
           border-left: 1px solid #444;
         }
       }

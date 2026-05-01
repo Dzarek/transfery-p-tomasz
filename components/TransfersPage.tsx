@@ -20,7 +20,7 @@ import Aos from "aos";
 import "aos/dist/aos.css";
 import CreateUserModal from "./CreateUserModal";
 
-const bg = "/images/tBg.jpg";
+const bg = "/images/bg3.jpg";
 
 const TransfersPage = () => {
   const {
@@ -330,7 +330,7 @@ const Wrapper = styled.div`
     z-index: 1;
     width: 100vw;
     padding: 10vh 3vw 0vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     color: #fff;
     h3 {
       color: #fff;
@@ -469,7 +469,7 @@ const Wrapper = styled.div`
     min-height: 74vh;
     width: 100vw;
     padding: 10vh 3vw 10vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     h3 {
       color: #fff;
       text-transform: uppercase;

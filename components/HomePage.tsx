@@ -172,7 +172,7 @@ const Wrapper = styled.div`
     min-height: 74vh;
     width: 100%;
     padding: 10vh 3vw 3vh;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.5);
     .titleContainer {
       width: 90%;
       display: flex;
@@ -270,7 +270,7 @@ const Wrapper = styled.div`
     min-height: 74vh;
     width: 100%;
     padding: 10vh 3vw 3vh;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.5);
     .titleContainer {
       width: 90%;
       display: flex;

@@ -3,7 +3,6 @@
 import styled from "styled-components";
 import { useGlobalContext } from "./context";
 import { useEffect, useState, useMemo } from "react";
-import { usePathname } from "next/navigation";
 import moment from "moment/min/moment-with-locales";
 import Aos from "aos";
 import "aos/dist/aos.css";
@@ -49,8 +48,6 @@ const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
     useGlobalContext();
   const [showModal, setShowModal] = useState<string | null>(null);
 
-  const pathname = usePathname();
-
   const now = useMemo(() => moment().valueOf(), []);
   const currentDay = useMemo(() => moment().format("L"), []);
 
@@ -58,19 +55,9 @@ const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
     Aos.init({ duration: 1000, offset: -100 });
   }, []);
 
-  // const handleDeleteShow = (id: string) => {
-  //   setConfirmDelete(true);
-  //   setDeleteId(id);
-  // };
-
   const handleDeleteShow = (item: Transfer) => {
     setSelectedTransfer(item);
     setConfirmDelete(true);
-  };
-
-  const getTimestamp = (date: string, time?: string) => {
-    const [h, m] = (time || "00:00").split(":").map(Number);
-    return new Date(date).getTime() + h * 3600000 + m * 60000;
   };
 
   return (
@@ -94,8 +81,12 @@ const TransfersList = ({ transfers }: { transfers: Transfer[] }) => {
           } = item;
 
           const convertDate = moment(date).format("L");
-          const timestamp = getTimestamp(date, time);
-          const isOld = timestamp < now;
+
+          const t = time; // hh:mm
+          const ms =
+            Number(t.split(":")[0]) * 60 * 60 * 1000 +
+            Number(t.split(":")[1]) * 60 * 1000;
+          const isOld = moment(date).valueOf() + ms < now;
 
           const liClass =
             status === "cancel"

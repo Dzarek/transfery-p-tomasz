@@ -6,7 +6,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
 
-const bg = "/images/bg3.jpg";
+const bg = "/images/tBg.jpg";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -243,6 +243,7 @@ const Wrapper = styled.div`
       margin-bottom: 7vh;
       letter-spacing: 2px;
       text-align: center;
+      font-weight: 500;
     }
     form {
       margin: 3vh auto 5vh;
