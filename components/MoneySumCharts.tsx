@@ -206,7 +206,7 @@ const Container = styled.div`
 
 const CloseIcon = styled(MdOutlineClose)`
   position: absolute;
-  top: 5%;
+  top: 2%;
   right: 5%;
   font-size: 2.5rem;
   color: var(--secondaryColor);

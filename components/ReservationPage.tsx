@@ -11,21 +11,15 @@ import { FaLock, FaLockOpen } from "react-icons/fa";
 import { GiCarWheel } from "react-icons/gi";
 import toast from "react-hot-toast";
 import { sendConfirmation } from "@/lib/api";
+import Image from "next/image";
 
 const minDate = moment().format("YYYY-MM-DD");
 const maxDate = moment().add(90, "days").format("YYYY-MM-DD");
 const minTime = new Date().toLocaleTimeString().slice(0, 5);
 
 const ReservationPage = () => {
-  const {
-    transfers,
-    setTransfers,
-    postProducts,
-    isAdmin,
-    name,
-    moneyData,
-    currentUser,
-  } = useGlobalContext();
+  const { setTransfers, postProducts, isAdmin, name, moneyData, currentUser } =
+    useGlobalContext();
 
   // 🔹 STATE
   const [date, setDate] = useState(minDate);
@@ -43,9 +37,14 @@ const ReservationPage = () => {
   const [specialTransfer, setSpecialTransfer] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const isNightTime = (time: string) => {
+    const [h] = time.split(":").map(Number);
+    return h >= 21 || h < 7; // 21:00 – 07:00
+  };
+
   // 🔹 AUTO PRICE
   useEffect(() => {
-    if (!people) {
+    if (!people || !time) {
       setPrice(0);
       setProvision(0);
       return;
@@ -58,9 +57,15 @@ const ReservationPage = () => {
 
     if (found) {
       setPrice(found.price);
-      setProvision(found.provision);
+
+      // 🔥 NOWA LOGIKA
+      if (isNightTime(time)) {
+        setProvision(found.nightProvision || 0);
+      } else {
+        setProvision(found.provision);
+      }
     }
-  }, [people, moneyData]);
+  }, [people, time, moneyData]);
 
   // 🔹 DIRECTIONS
   const directions = [
@@ -200,10 +205,12 @@ const ReservationPage = () => {
           Rezerwacja <br /> <p>(max 90 dni do przodu)</p>
         </h2>
 
-        <img
+        <Image
           src="/images/car2.png"
           alt=""
           className={sendForm ? "carRide" : "carBack"}
+          width={500}
+          height={500}
         />
       </div>
 
@@ -377,11 +384,26 @@ const ReservationPage = () => {
             : "zmień na transfer specjalny"}
         </button>
       )}
-      {specialTransfer && (
+      {specialTransfer ? (
         <p className="specialInfo">
           Dodając transfer specjalny możesz ustalić własne ceny, prowizje oraz
           liczbę osób. Przed rezerwacją porozmawiaj ze swoim opiekunem.{" "}
         </p>
+      ) : (
+        <ul className="priceInfo">
+          <li>
+            {moneyData[0].minPeople}-{moneyData[0].maxPeople} osób - cena:{" "}
+            <span>{moneyData[0].price} PLN</span> / prowizja:{" "}
+            <span>{moneyData[0].provision} PLN</span> (noc{" "}
+            <span>{moneyData[0].nightProvision} PLN</span>)
+          </li>
+          <li>
+            {moneyData[1].minPeople}-{moneyData[1].maxPeople} osób - cena:{" "}
+            <span>{moneyData[1].price} PLN</span> / prowizja:{" "}
+            <span>{moneyData[1].provision} PLN</span> (noc{" "}
+            <span>{moneyData[1].nightProvision} PLN</span>)
+          </li>
+        </ul>
       )}
     </Wrapper>
   );
@@ -403,7 +425,7 @@ const Wrapper = styled.div`
     text-transform: uppercase;
     color: var(--secondaryColor);
     align-self: center;
-    margin-bottom: 4vh;
+    margin-bottom: 0vh;
     font-size: 1.8rem;
     font-weight: 600;
     letter-spacing: 3px;
@@ -427,6 +449,7 @@ const Wrapper = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    /* padding-bottom: 4vh; */
     @media screen and (max-width: 900px) {
       width: 90vw;
     }
@@ -764,6 +787,29 @@ const Wrapper = styled.div`
     bottom: 2vh;
     color: #fff;
     font-size: 0.9rem;
+    @media screen and (max-width: 900px) {
+      position: static;
+      width: 90vw;
+      margin: -2vh auto 14vh;
+      text-align: center;
+    }
+  }
+  .priceInfo {
+    position: absolute;
+    left: 3%;
+    width: 40vw;
+    bottom: 2vh;
+    color: #fff;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    list-style: square;
+    li {
+      margin-bottom: 2px;
+      span {
+        color: var(--secondaryColor);
+      }
+    }
     @media screen and (max-width: 900px) {
       position: static;
       width: 90vw;

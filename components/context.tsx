@@ -40,6 +40,7 @@ export interface MoneyData {
   maxPeople: number;
   price: number;
   provision: number;
+  nightProvision: number;
 }
 
 export interface TransferData {
@@ -156,8 +157,8 @@ const currentMonthYear = moment().format("MMMM YYYY");
 const prevMonthYear = moment().subtract(1, "month").format("MMMM YYYY");
 
 const money: MoneyData[] = [
-  { minPeople: 1, maxPeople: 3, price: 130, provision: 35 },
-  { minPeople: 4, maxPeople: 8, price: 160, provision: 50 },
+  { minPeople: 1, maxPeople: 3, price: 130, provision: 35, nightProvision: 10 },
+  { minPeople: 4, maxPeople: 8, price: 160, provision: 50, nightProvision: 20 },
 ];
 
 export const AppProvider2: React.FC<{

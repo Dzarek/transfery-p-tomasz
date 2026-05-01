@@ -63,7 +63,6 @@ const AppProvider = ({
   }, []);
 
   // NOTIFICATION
-  console.log(!activeUser?.uid);
 
   useEffect(() => {
     if (!activeUser?.uid) return;
