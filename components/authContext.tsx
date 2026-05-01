@@ -17,8 +17,6 @@ const defaultValues: ContextTypes = {
   setName: () => "",
   setModalName: () => false,
   setLoading: () => true,
-  // file: null,
-  // setFile: () => {},
 };
 
 const AppContext = createContext<ContextTypes>(defaultValues);
@@ -36,10 +34,8 @@ const AppProvider = ({
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [modalName, setModalName] = useState(false);
-  // const [file, setFile] = useState<any>(null);
 
   useEffect(() => {
-    // setLoading(true);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setActiveUser(user);
@@ -82,8 +78,6 @@ const AppProvider = ({
           loading,
           email,
           modalName,
-          // file,
-          // setFile,
           setIsLogin,
           setName,
           setModalName,

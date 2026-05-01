@@ -16,8 +16,6 @@ import {
 } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  // signOut,
   onAuthStateChanged,
   updateProfile,
   getAuth,
@@ -26,8 +24,6 @@ import {
 } from "firebase/auth";
 import * as XLSX from "xlsx";
 import { sendConfirmationCancel } from "../lib/api";
-// import { subscribe } from "./Notification";
-import { useRouter } from "next/navigation";
 import { logout } from "@/lib/user.actions";
 import { signOut } from "next-auth/react";
 import { Transfer } from "./TransfersList";
@@ -121,15 +117,12 @@ export interface AppContextType {
     specialTransfer?: boolean,
   ) => Promise<void>;
   setConfirmDelete: React.Dispatch<React.SetStateAction<boolean>>;
-  // setDeleteId: React.Dispatch<React.SetStateAction<string | null>>;
   setSelectedTransfer: React.Dispatch<React.SetStateAction<Transfer | null>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   handleStatus: () => Promise<void>;
   setActiveHotel: React.Dispatch<React.SetStateAction<any>>;
   setName: React.Dispatch<React.SetStateAction<string | null>>;
   setUserID: React.Dispatch<React.SetStateAction<string>>;
-  // logout: () => Promise<void>;
-  // login: (email: string, password: string) => Promise<void>;
   updateUser: (newName: string) => Promise<void>;
   updateName: (newName: string) => Promise<void>;
   changePassword: () => Promise<void>;
@@ -176,10 +169,7 @@ export const AppProvider2: React.FC<{
   const [userID, setUserID] = useState<string>("0");
   const [name, setName] = useState<string | null>("");
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
-  // const [isAdmin, setIsAdmin] = useState<boolean>(false);
-
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-  // const [deleteId, setDeleteId] = useState<string | null>(null);
   const [selectedTransfer, setSelectedTransfer] = useState<Transfer | null>(
     null,
   );
@@ -189,11 +179,7 @@ export const AppProvider2: React.FC<{
   const [file, setFile] = useState<BackupData[] | null>(null);
   const [downloadData, setDownloadData] = useState<BackupData[] | null>(null);
 
-  const router = useRouter();
   const authInstance = getAuth();
-
-  // --- ZOPTYMALIZOWANE DANE POCHODNE (useMemo) ---
-  // Wcześniej było to zarządzane osobnymi useEffect i useState. Teraz liczy się samo, bez re-renderowania.
 
   const activeTransfers = useMemo(
     () => transfers.filter((t) => t.status !== "cancel"),
@@ -401,7 +387,7 @@ export const AppProvider2: React.FC<{
         setName(user.displayName);
 
         if (isAdmin) {
-          await getAllUsers(); // 🔥 tu jest OK
+          await getAllUsers();
         }
 
         const getData = doc(db, `usersList/${user.uid}`);
@@ -412,7 +398,7 @@ export const AppProvider2: React.FC<{
     });
 
     return () => unsubscribe();
-  }, [isAdmin]); // 🔥 WAŻNE
+  }, [isAdmin]);
 
   // --- USER METHODS ---
 
@@ -506,13 +492,11 @@ export const AppProvider2: React.FC<{
       const item = data2.data();
       setMoneyData(item?.money ? item.money : money);
 
-      // Usunięto wyciek pamięci zwracając nasłuch
       return onSnapshot(collectionRef, (snapshot) => {
         const fetchedItems = snapshot.docs.map(
           (d) => ({ ...d.data(), id: d.id }) as TransferData,
         );
 
-        // Sortowanie przeniesione bezpośrednio tutaj po pobraniu!
         fetchedItems.sort((a, b) => {
           const msA =
             Number(a.time.split(":")[0]) * 3600000 +
@@ -656,8 +640,6 @@ export const AppProvider2: React.FC<{
         moment().valueOf(),
       );
 
-      // ✅ DOPIERO PO SUKCESIE
-
       if (isAdmin) {
         toast("Potwierdzono transfer", {
           icon: "✓",
@@ -748,7 +730,6 @@ export const AppProvider2: React.FC<{
           );
         });
 
-        // 🔥 sanitizacja nazwy arkusza
         const safeName = name.replace(/[\\/?*\[\]]/g, "").slice(0, 31);
 
         XLSX.utils.book_append_sheet(
@@ -760,7 +741,7 @@ export const AppProvider2: React.FC<{
 
       XLSX.writeFile(wb, "Transfery.xlsx");
 
-      // 🔥 JSON backup
+      //  JSON backup
       const blob = new Blob([JSON.stringify(downloadData)], {
         type: "application/json",
       });
@@ -772,7 +753,7 @@ export const AppProvider2: React.FC<{
       link.download = "TransferyBackUp.json";
       link.click();
 
-      URL.revokeObjectURL(url); // 🔥 cleanup
+      URL.revokeObjectURL(url); //  cleanup
 
       toast("Pobrano kopię zapasową", {
         icon: "✓",
@@ -858,7 +839,6 @@ export const AppProvider2: React.FC<{
     const body = `DATA: ${date}, GODZINA: ${time}`;
     const tag = id;
     const recipeID = "";
-    // await subscribe(`${hotelName} anulował transfer`, `DATA: ${date}, GODZINA: ${time}`, id, isAdmin);
     await fetch("/api/push", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -903,15 +883,12 @@ export const AppProvider2: React.FC<{
         setTransfers,
         postProducts,
         setConfirmDelete,
-        // setDeleteId,
         setSelectedTransfer,
         setLoading,
         handleStatus,
         setActiveHotel,
         setName,
         setUserID,
-        // logout,
-        // login,
         updateUser,
         updateName,
         changePassword,
